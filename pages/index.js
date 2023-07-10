@@ -2,16 +2,19 @@ import Image from "next/image";
 import { BsSearch } from "react-icons/bs";
 import Head from "next/head";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Weather from "../components/Weather";
 
 export default function Home() {
 	const [city, setCity] = useState("");
 	const [weather, setWeather] = useState({});
 	const [loading, setLoading] = useState(false);
-
 	const fetchWeather = async (e) => {
 		e.preventDefault();
+		if (!city) {
+			console.error("City name cannot be empty");
+			return;
+		}
 		setLoading(true);
 		try {
 			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
@@ -30,6 +33,42 @@ export default function Home() {
 		setLoading(false);
 		setCity("");
 	};
+
+	const fetchRandomWeather = async () => {
+		setLoading(true);
+		try {
+			// Define population range
+			const min_population = 100000;
+			const max_population = 1000000;
+
+			const cityUrl = `https://api.api-ninjas.com/v1/city?min_population=${min_population}&max_population=${max_population}&limit=30`;
+			const cityResponse = await axios.get(cityUrl, {
+				headers: { "X-Api-Key": process.env.NEXT_PUBLIC_API_NINJA_KEY },
+			});
+			const cities = cityResponse.data;
+
+			// Select a random city from the list
+			const randomCity = cities[Math.floor(Math.random() * cities.length)];
+
+			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${randomCity.name}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+			const geocodingResponse = await axios.get(geocodingUrl);
+			const { lat, lon, country, state } = geocodingResponse.data[0];
+			const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+			const weatherResponse = await axios.get(weatherUrl);
+			setWeather({
+				...weatherResponse.data,
+				country,
+				state,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		fetchRandomWeather();
+	}, []);
 
 	return (
 		<div>
@@ -55,6 +94,9 @@ export default function Home() {
 					</div>
 					<button onClick={fetchWeather}>
 						<BsSearch size={20} />
+					</button>
+					<button type="button" onClick={fetchRandomWeather}>
+						Random City
 					</button>
 				</form>
 			</div>
