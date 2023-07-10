@@ -2,15 +2,18 @@ import Image from "next/image";
 import React from "react";
 
 const Weather = ({ data }) => {
-	console.log(data);
+	const location = data.name ? data.name : "";
+	const state = data.state ? data.state : "";
+	const country = data.country ? data.country : "";
+
 	return (
 		<div className="relative flex flex-col justify-between max-w-[500px] w-full h-[90vh] m-auto p-4 text-gray-300 z-10">
 			{/* Top */}
 			<div className="relative flex justify-between pt-12">
 				<div className="flex flex-col items-center">
 					<Image
-						src={`http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`}
-						alt="/"
+						src={`http://openweathermap.org/img/wn/${data.weather[0].icon}.png`}
+						alt="weather icon"
 						width="100"
 						height="100"
 					/>
@@ -21,7 +24,9 @@ const Weather = ({ data }) => {
 			{/* Bottom */}
 
 			<div className="bg-black/50 relative p-8 rounded-md">
-				<p className="text-2xl text-center pb-6">Weather in {data.name}</p>
+				<p className="text-2xl text-center pb-6">
+					Weather in {location}, {state}, {country}
+				</p>
 				<div className="flex justify-between text-center">
 					<div>
 						<p className="font-bold text-2xl">

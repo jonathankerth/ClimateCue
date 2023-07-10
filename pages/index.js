@@ -1,9 +1,8 @@
 import Image from "next/image";
-import { Inter } from "next/font/google";
+import { BsSearch } from "react-icons/bs";
 import Head from "next/head";
 import axios from "axios";
 import { useState } from "react";
-import { BsSearch } from "react-icons/bs";
 import Weather from "../components/Weather";
 
 export default function Home() {
@@ -11,16 +10,25 @@ export default function Home() {
 	const [weather, setWeather] = useState({});
 	const [loading, setLoading] = useState(false);
 
-	const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
-
-	const fetchWeather = (e) => {
+	const fetchWeather = async (e) => {
 		e.preventDefault();
 		setLoading(true);
-		axios.get(url).then((response) => {
-			setWeather(response.data);
-		});
-		setCity("");
+		try {
+			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+			const geocodingResponse = await axios.get(geocodingUrl);
+			const { lat, lon, country, state } = geocodingResponse.data[0];
+			const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+			const weatherResponse = await axios.get(weatherUrl);
+			setWeather({
+				...weatherResponse.data,
+				country,
+				state,
+			});
+		} catch (error) {
+			console.error(error);
+		}
 		setLoading(false);
+		setCity("");
 	};
 
 	return (
@@ -63,7 +71,7 @@ export default function Home() {
 			/>
 
 			{/* Weather */}
-			{weather.main && <Weather data={weather} />}
+			{Object.keys(weather).length !== 0 && <Weather data={weather} />}
 		</div>
 	);
 }
