@@ -57,7 +57,7 @@ export default function Home() {
 			{/* Background image */}
 			<Image
 				src="https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80"
-				alt="Example Image"
+				alt="background img"
 				layout="fill"
 				className="object-cover"
 			/>
