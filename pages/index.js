@@ -44,8 +44,8 @@ export default function Home() {
 		setLoading(true);
 		try {
 			// Define population range
-			const min_population = 100000;
-			const max_population = 1000000;
+			const min_population = 2697000;
+			const max_population = 100000000;
 
 			const cityUrl = `https://api.api-ninjas.com/v1/city?min_population=${min_population}&max_population=${max_population}&limit=30`;
 			const cityResponse = await axios.get(cityUrl, {
@@ -67,11 +67,11 @@ export default function Home() {
 				state,
 			});
 			setError(null);
+			setCity(""); // Clear the search bar
 		} catch (error) {
 			setError(error.message);
 		}
 		setLoading(false);
-		setCity(""); // Clear the search bar
 	};
 
 	useEffect(() => {
