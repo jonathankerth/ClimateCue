@@ -9,16 +9,21 @@ export default function Home() {
 	const [city, setCity] = useState("");
 	const [weather, setWeather] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState(null);
+
 	const fetchWeather = async (e) => {
 		e.preventDefault();
 		if (!city) {
-			console.error("City name cannot be empty");
+			setError("City name cannot be empty");
 			return;
 		}
 		setLoading(true);
 		try {
 			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
 			const geocodingResponse = await axios.get(geocodingUrl);
+			if (geocodingResponse.data.length === 0) {
+				throw new Error("City not found");
+			}
 			const { lat, lon, country, state } = geocodingResponse.data[0];
 			const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
 			const weatherResponse = await axios.get(weatherUrl);
@@ -27,11 +32,12 @@ export default function Home() {
 				country,
 				state,
 			});
+			setError(null);
+			setCity(""); // Clear the search bar after the weather data has been set
 		} catch (error) {
-			console.error(error);
+			setError(error.message);
 		}
 		setLoading(false);
-		setCity("");
 	};
 
 	const fetchRandomWeather = async () => {
@@ -60,10 +66,12 @@ export default function Home() {
 				country,
 				state,
 			});
+			setError(null);
 		} catch (error) {
-			console.error(error);
+			setError(error.message);
 		}
 		setLoading(false);
+		setCity(""); // Clear the search bar
 	};
 
 	useEffect(() => {
@@ -99,6 +107,8 @@ export default function Home() {
 						Random City
 					</button>
 				</form>
+				{loading && <div>Loading...</div>}
+				{error && <div>{error}</div>}
 			</div>
 
 			{/* Overlay */}
