@@ -108,7 +108,11 @@ export default function Home() {
 					</button>
 				</form>
 				{loading && <div>Loading...</div>}
-				{error && <div>{error}</div>}
+				{error && (
+					<div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md">
+						{error}
+					</div>
+				)}
 			</div>
 
 			{/* Overlay */}
