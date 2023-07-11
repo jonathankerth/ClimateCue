@@ -33,11 +33,12 @@ export default function Home() {
 				state,
 			});
 			setError(null);
-			setCity(""); // Clear the search bar after the weather data has been set
 		} catch (error) {
 			setError(error.message);
+		} finally {
+			setLoading(false);
+			setCity(""); // Clear the search bar after fetching the weather data
 		}
-		setLoading(false);
 	};
 
 	const fetchRandomWeather = async () => {
@@ -67,7 +68,6 @@ export default function Home() {
 				state,
 			});
 			setError(null);
-			setCity(""); // Clear the search bar
 		} catch (error) {
 			setError(error.message);
 		}
@@ -90,23 +90,34 @@ export default function Home() {
 			<div className="relative flex justify-between items-center max-w-[500px] w-full m-auto pt-4 px-4 text-white z-10">
 				<form
 					onSubmit={fetchWeather}
-					className="flex justify-between items-center w-full m-auto p-3 bg-transparent border border-gray-300 text-white rounded-2xl"
+					className="flex justify-between items-center w-full m-auto p-3 bg-white bg-opacity-60 shadow-lg rounded-2xl space-x-2"
 				>
-					<div>
+					<div className="flex-grow">
 						<input
 							onChange={(e) => setCity(e.target.value)}
-							className="bg-transparent border-none text-white focus:outline-none text-2xl"
+							value={city} // Bind the city state to the input value
+							className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
 							type="text"
 							placeholder="Search city"
 						/>
 					</div>
-					<button onClick={fetchWeather}>
+
+					<button
+						type="submit"
+						className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+					>
 						<BsSearch size={20} />
 					</button>
-					<button type="button" onClick={fetchRandomWeather}>
+
+					<button
+						type="button"
+						onClick={fetchRandomWeather}
+						className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+					>
 						Random City
 					</button>
 				</form>
+
 				{loading && <div>Loading...</div>}
 				{error && (
 					<div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md">
