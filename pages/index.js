@@ -39,7 +39,7 @@ export default function Home() {
 			}
 		} finally {
 			setLoading(false);
-			setCity(""); // Clear the search bar after fetching the weather data
+			setCity(""); //
 		}
 	};
 
