@@ -10,7 +10,6 @@ export default function Home() {
 	const [weather, setWeather] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-
 	const fetchWeather = async (e) => {
 		e.preventDefault();
 		if (!city) {
@@ -35,6 +34,9 @@ export default function Home() {
 			setError(null);
 		} catch (error) {
 			setError(error.message);
+			if (error.message === "City not found") {
+				alert("City not found. Please try again with a valid city name."); // Alert to the user
+			}
 		} finally {
 			setLoading(false);
 			setCity(""); // Clear the search bar after fetching the weather data
