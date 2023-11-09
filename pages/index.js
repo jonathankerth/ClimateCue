@@ -4,9 +4,11 @@ import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Weather from "../components/Weather";
+import TemperatureSwitch from "../components/TemperatureSwitch";
 import FiveDayForecast from "@/components/FiveDayForecast";
 
 export default function Home() {
+	const [isCelsius, setIsCelsius] = useState(false);
 	const [city, setCity] = useState("");
 	const [weather, setWeather] = useState({});
 	const [forecast, setForecast] = useState([]);
@@ -111,6 +113,10 @@ export default function Home() {
 		fetchRandomWeather();
 	}, []);
 
+	const toggleTemperatureUnit = () => {
+		setIsCelsius(!isCelsius);
+	};
+
 	return (
 		<div className="relative min-h-screen">
 			<Head>
@@ -129,7 +135,7 @@ export default function Home() {
 			/>
 
 			<div className="relative z-10">
-				<div className="flex justify-between items-center max-w-[500px] w-full m-auto  mb-8 pt-4 px-4 text-white">
+				<div className="flex justify-between items-center max-w-[500px] w-full m-auto mb-8 pt-4 px-4 text-white">
 					<form
 						onSubmit={fetchWeather}
 						className="flex justify-between items-center w-full m-auto p-3 bg-white bg-opacity-60 shadow-lg rounded-2xl space-x-2"
@@ -159,13 +165,25 @@ export default function Home() {
 					</form>
 				</div>
 
-				{Object.keys(weather).length !== 0 && <Weather data={weather} />}
+				{/* Temperature Switch */}
+				<div className="flex justify-center my-4">
+					<TemperatureSwitch
+						isCelsius={isCelsius}
+						onToggle={toggleTemperatureUnit}
+					/>
+				</div>
+
+				{/* Weather and Forecast */}
+				{Object.keys(weather).length !== 0 && (
+					<Weather data={weather} isCelsius={isCelsius} />
+				)}
 				{forecast.length > 0 && (
 					<div className="p-4">
-						<FiveDayForecast forecast={forecast} />
+						<FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
 					</div>
 				)}
 
+				{/* Loading and Error Messages */}
 				{loading && <div className="text-center text-white">Loading...</div>}
 				{error && (
 					<div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">

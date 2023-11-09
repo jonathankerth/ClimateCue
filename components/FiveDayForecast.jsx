@@ -1,7 +1,11 @@
 import React from "react";
 import Image from "next/image";
 
-const FiveDayForecast = ({ forecast }) => {
+const FiveDayForecast = ({ forecast, isCelsius }) => {
+	const toCelsius = (fahrenheit) => {
+		return ((fahrenheit - 32) * 5) / 9;
+	};
+
 	if (!forecast || !Array.isArray(forecast) || forecast.length === 0) {
 		return (
 			<div className="text-center text-gray-500 text-lg">
@@ -32,7 +36,11 @@ const FiveDayForecast = ({ forecast }) => {
 							width={64}
 							height={64}
 						/>
-						<p className="font-bold text-2xl">{Math.round(day.main.temp)}°F</p>
+						<p className="font-bold text-2xl">
+							{isCelsius
+								? `${Math.round(toCelsius(day.main.temp))}°C`
+								: `${Math.round(day.main.temp)}°F`}
+						</p>
 						<p className="text-sm capitalize">{day.weather[0].description}</p>
 					</div>
 				))}
