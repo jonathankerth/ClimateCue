@@ -135,7 +135,7 @@ export default function Home() {
 			/>
 
 			<div className="relative z-10">
-				<div className="flex justify-between items-center max-w-[500px] w-full m-auto mb-8 pt-4 px-4 text-white">
+				<div className="flex justify-between items-center max-w-[400px] w-full m-auto mb-8 pt-4 px-4 text-white">
 					<form
 						onSubmit={fetchWeather}
 						className="flex justify-between items-center w-full m-auto p-3 bg-white bg-opacity-60 shadow-lg rounded-2xl space-x-2"
