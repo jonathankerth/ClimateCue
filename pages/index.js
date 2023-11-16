@@ -239,7 +239,8 @@ export default function Home() {
 					<WeatherMap
 						lat={currentCityCoords.lat}
 						lon={currentCityCoords.lon}
-						key={weatherMapKey} // Use the weatherMapKey as the key
+						isCelsius={isCelsius}
+						key={weatherMapKey}
 					/>
 				</div>
 			</div>
