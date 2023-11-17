@@ -1,6 +1,6 @@
 {
-	"name": "weather-app",
-	"version": "0.1.0",
+	"name": "weather-website",
+	"version": "1.1.0",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
