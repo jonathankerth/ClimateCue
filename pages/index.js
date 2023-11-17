@@ -240,6 +240,7 @@ export default function Home() {
 						lat={currentCityCoords.lat}
 						lon={currentCityCoords.lon}
 						isCelsius={isCelsius}
+						cityName={weather.name}
 						key={weatherMapKey}
 					/>
 				</div>

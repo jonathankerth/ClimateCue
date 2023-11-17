@@ -2,11 +2,31 @@
 import React, { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons";
 
-const WeatherMap = ({ lat, lon, isCelsius }) => {
+const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 	// Remove forceUpdate prop
 	const [map, setMap] = useState(null);
 	const [layer, setLayer] = useState("temp_new"); // Default layer: Temp
+	const createCustomIcon = () => {
+		// SVG string
+		const svgString = `
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
+                <path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/>
+            </svg>
+        `;
+		const iconElement = document.createElement("div");
+		iconElement.innerHTML = svgString;
+		return iconElement;
+	};
+
+	const customIcon = L.divIcon({
+		html: createCustomIcon().outerHTML,
+		className: "", // Important to avoid Leaflet's default icon styles
+		iconSize: L.point(30, 30), // You can adjust the size as needed
+		popupAnchor: [0, -15], // Adjust the anchor point as needed
+	});
 
 	// Define the legends for each layer
 
@@ -135,6 +155,7 @@ const WeatherMap = ({ lat, lon, isCelsius }) => {
 	const latitude = Number(lat);
 	const longitude = Number(lon);
 	const isValidLocation = !isNaN(latitude) && !isNaN(longitude);
+	const [marker, setMarker] = useState(null);
 
 	useEffect(() => {
 		if (!map && isValidLocation) {
@@ -143,10 +164,27 @@ const WeatherMap = ({ lat, lon, isCelsius }) => {
 				maxZoom: 30,
 				attribution: "© OpenStreetMap contributors",
 			}).addTo(initializedMap);
+			const createCustomIcon = () => {
+				const iconElement = document.createElement("div");
+				iconElement.innerHTML = `<span class="text-blue-500 text-2xl"><FontAwesomeIcon icon={faLocationCrosshairs} /></span>`;
+				return iconElement;
+			};
+
+			const newMarker = L.marker([latitude, longitude], { icon: customIcon })
+				.addTo(initializedMap)
+				.bindPopup(`Weather in ${cityName || "Unknown"}`)
+				.openPopup();
 
 			setMap(initializedMap);
+			setMarker(newMarker);
 		}
-	}, [latitude, longitude, map, isValidLocation]);
+	}, [latitude, longitude, map, isValidLocation, cityName]);
+
+	useEffect(() => {
+		if (map && marker) {
+			marker.getPopup().setContent(`Weather in ${cityName || "Unknown"}`);
+		}
+	}, [map, marker, cityName]);
 
 	useEffect(() => {
 		if (map) {
