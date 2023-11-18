@@ -125,7 +125,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 				<h3 className="font-semibold text-lg mb-4 text-center">
 					{currentLegend.title}
 				</h3>
-				<div className="flex justify-center items-center">
+				<div className="flex flex-wrap justify-center items-center">
 					{currentLegend.colors.map((item, index) => {
 						let displayValue = item.value;
 						if (layer === "temp_new" && !isCelsius) {
@@ -137,7 +137,10 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 							displayValue = tempValues.join(" to ");
 						}
 						return (
-							<div key={index} className="flex flex-col items-center mx-1">
+							<div
+								key={index}
+								className="flex flex-col items-center m-2 w-1/3 md:w-1/4 lg:w-1/6"
+							>
 								<span className="text-sm mb-1">{displayValue}</span>
 								<div
 									className="w-10 h-3"
@@ -178,7 +181,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 			setMap(initializedMap);
 			setMarker(newMarker);
 		}
-	}, [latitude, longitude, map, isValidLocation, cityName]);
+	}, [latitude, longitude, map, isValidLocation, cityName, customIcon]);
 
 	useEffect(() => {
 		if (map && marker) {
