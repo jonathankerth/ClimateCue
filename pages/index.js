@@ -4,10 +4,12 @@ import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-
+import Login from "../components/Login";
+import Signup from "../components/Signup";
 import Weather from "../components/Weather";
 import TemperatureSwitch from "../components/TemperatureSwitch";
 import FiveDayForecast from "@/components/FiveDayForecast";
+import AuthComponent from "../components/AuthComponent";
 
 const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
 	ssr: false,
@@ -144,7 +146,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="relative flex flex-col  bg-cover bg-no-repeat min-h-screen w-full">
+		<div className="relative flex flex-col bg-cover bg-no-repeat min-h-screen w-full">
 			<Head>
 				<title>Weather Website</title>
 				<meta
@@ -165,8 +167,16 @@ export default function Home() {
 
 			<div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
-			{/* Rest of the Content */}
-			<div className="relative z-10 p-0 m-o">
+			<div className="relative z-10 flex flex-col w-full">
+				<div className="relative z-10 w-full">
+					<div className="absolute top-4 right-4 z-20 hidden md:block">
+						<AuthComponent />
+					</div>
+					<div className="block md:hidden p-4">
+						<AuthComponent />
+					</div>
+				</div>
+
 				<div className="max-w-[400px] mx-auto my-8">
 					{/* Search Form */}
 					<form
