@@ -230,25 +230,27 @@ export default function Home(setGlobalCity) {
 				className="z-[-1]"
 				priority
 			/>
-
 			<div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
 			<div className="relative z-10 flex flex-col w-full">
-				<div className="relative z-10 w-full">
-					<div className="absolute top-4 right-4 z-20 hidden md:block">
+				{/* Conditional rendering based on user authentication */}
+				{currentUser ? (
+					// When user is logged in, AuthComponent takes full width
+					<div className="relative z-20">
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
 						/>
 					</div>
-					<div className="block md:hidden p-4">
+				) : (
+					// When not logged in, position AuthComponent to the right
+					<div className="absolute top-4 right-4 z-20">
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
 						/>
 					</div>
-				</div>
-
+				)}
 				<div className="max-w-[400px] mx-auto my-8">
 					{/* Search Form */}
 					<form

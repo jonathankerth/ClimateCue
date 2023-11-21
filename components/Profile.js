@@ -1,6 +1,13 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { getAuth, signOut } from "firebase/auth";
-import { db } from "@/lib/firebase";
+import {
+	getAuth,
+	signOut,
+	updateEmail,
+	updatePassword,
+	deleteUser,
+} from "firebase/auth";
+import { db, storage } from "@/lib/firebase"; // Assuming you have firebase storage setup
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
 	collection,
 	query,
@@ -14,6 +21,9 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 	const [favoriteCities, setFavoriteCities] = useState(
 		userFavoriteCities || []
 	);
+	const [newEmail, setNewEmail] = useState("");
+	const [newPassword, setNewPassword] = useState("");
+	const [showAccountSettings, setShowAccountSettings] = useState(false);
 
 	const fetchFavoriteCities = useCallback(async () => {
 		try {
@@ -55,11 +65,55 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 		signOut(auth).catch((error) => console.error("Error signing out:", error));
 	};
 
+	const handleEmailChange = () => {
+		updateEmail(auth.currentUser, newEmail)
+			.then(() => {
+				console.log("Email updated!");
+			})
+			.catch((error) => {
+				console.error("Error updating email:", error);
+			});
+	};
+
+	const handlePasswordChange = () => {
+		updatePassword(auth.currentUser, newPassword)
+			.then(() => {
+				console.log("Password updated!");
+			})
+			.catch((error) => {
+				console.error("Error updating password:", error);
+			});
+	};
+
+	const handleDeleteAccount = () => {
+		// Show a confirmation dialog
+		if (
+			window.confirm(
+				"Are you sure you want to delete your account? This action cannot be undone."
+			)
+		) {
+			deleteUser(auth.currentUser)
+				.then(() => {
+					console.log("User deleted!");
+					// Additional logic after successful deletion, if needed
+				})
+				.catch((error) => {
+					console.error("Error deleting user:", error);
+				});
+		}
+	};
+
+	const toggleAccountSettings = () => {
+		setShowAccountSettings(!showAccountSettings);
+	};
 	return (
-		<div className="p-4 bg-white rounded-lg shadow border border-gray-200 max-w-xs mx-auto my-4">
-			<p className="text-lg font-medium text-gray-800">
+		<div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
+			{/* User Greeting */}
+			<p className="text-lg font-medium text-gray-800 mb-4">
 				Welcome, <span className="text-gray-600">{user.email}</span>
 			</p>
+
+			{/* Favorite Cities List */}
 			<div className="my-4">
 				{favoriteCities.map((city, index) => (
 					<div
@@ -80,9 +134,69 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 					</div>
 				))}
 			</div>
+
+			{/* Toggle Account Settings Button */}
+			<button
+				onClick={toggleAccountSettings}
+				className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out"
+			>
+				{showAccountSettings ? "Hide Account Settings" : "Account Settings"}
+			</button>
+			{/* Account Settings */}
+			{showAccountSettings && (
+				<div
+					className={`${
+						showAccountSettings ? "max-h-96 overflow-y-auto" : "max-h-0"
+					} transition-all ease-in-out duration-500`}
+				>
+					{/* Email Update Form */}
+					<div className="mt-3">
+						<input
+							type="email"
+							placeholder="New Email"
+							value={newEmail}
+							onChange={(e) => setNewEmail(e.target.value)}
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+						/>
+						<button
+							onClick={handleEmailChange}
+							className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out"
+						>
+							Update Email
+						</button>
+					</div>
+
+					{/* Password Update Form */}
+					<div className="mt-3">
+						<input
+							type="password"
+							placeholder="New Password"
+							value={newPassword}
+							onChange={(e) => setNewPassword(e.target.value)}
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+						/>
+						<button
+							onClick={handlePasswordChange}
+							className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out"
+						>
+							Update Password
+						</button>
+					</div>
+
+					{/* Delete Account Button */}
+					<button
+						onClick={handleDeleteAccount}
+						className="w-full bg-red-600 text-white py-2 px-4 mt-2 rounded hover:bg-red-700 transition duration-300 ease-in-out"
+					>
+						Delete Account
+					</button>
+				</div>
+			)}
+
+			{/* Logout Button */}
 			<button
 				onClick={handleLogout}
-				className="mt-3 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300 ease-in-out"
+				className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300 ease-in-out"
 			>
 				Logout
 			</button>
