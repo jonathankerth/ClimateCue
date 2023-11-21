@@ -4,7 +4,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Profile from "./Profile";
 
-const AuthComponent = () => {
+const AuthComponent = ({ favoriteCities }) => {
 	const [authMode, setAuthMode] = useState(null);
 	const [currentUser, setCurrentUser] = useState(null);
 	const containerRef = useRef(null);
@@ -42,7 +42,13 @@ const AuthComponent = () => {
 	return (
 		<div className="text-center" ref={containerRef}>
 			{currentUser ? (
-				<Profile user={currentUser} />
+				<Profile
+					user={currentUser}
+					userFavoriteCities={favoriteCities}
+					updateUserFavoriteCities={(updatedCities) => {
+						console.log("Updated favorite cities:", updatedCities);
+					}}
+				/>
 			) : (
 				<>
 					{authMode === "login" && <Login setAuthMode={setAuthMode} />}

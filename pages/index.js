@@ -3,9 +3,10 @@ import { BsSearch } from "react-icons/bs";
 import Head from "next/head";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import dynamic from "next/dynamic";
-import Login from "../components/Login";
-import Signup from "../components/Signup";
 import Weather from "../components/Weather";
 import TemperatureSwitch from "../components/TemperatureSwitch";
 import FiveDayForecast from "@/components/FiveDayForecast";
@@ -28,6 +29,47 @@ export default function Home() {
 		lat: 0,
 		lon: 0,
 	});
+	const auth = getAuth();
+	const citiesCollectionRef = collection(db, "favoriteCities");
+	const [favoriteCities, setFavoriteCities] = useState([]);
+	const fetchFavoriteCities = async () => {
+		try {
+			const citiesCollectionRef = collection(db, "favoriteCities");
+			const querySnapshot = await getDocs(citiesCollectionRef);
+			const cities = querySnapshot.docs.map((doc) => doc.data().city);
+			setFavoriteCities(cities);
+		} catch (error) {
+			console.error("Error fetching favorite cities:", error);
+		}
+	};
+
+	useEffect(() => {
+		fetchFavoriteCities();
+	}, []);
+
+	const saveFavoriteCity = async (cityName) => {
+		if (!auth.currentUser) {
+			console.error("No user logged in");
+			return;
+		}
+
+		if (!cityName || cityName.trim() === "") {
+			console.error("No city selected");
+			return;
+		}
+
+		try {
+			await addDoc(citiesCollectionRef, {
+				userId: auth.currentUser.uid,
+				city: cityName.trim(),
+			});
+			console.log(`${cityName} added to favorites`);
+			// Fetch the updated list of favorite cities
+			fetchFavoriteCities();
+		} catch (error) {
+			console.error("Error adding favorite city:", error);
+		}
+	};
 
 	const fetchWeather = async (e) => {
 		e.preventDefault();
@@ -84,6 +126,7 @@ export default function Home() {
 
 	const fetchRandomWeather = async () => {
 		setLoading(true);
+		setCity("");
 		try {
 			const min_population = 2697000;
 			const max_population = 100000000;
@@ -170,10 +213,10 @@ export default function Home() {
 			<div className="relative z-10 flex flex-col w-full">
 				<div className="relative z-10 w-full">
 					<div className="absolute top-4 right-4 z-20 hidden md:block">
-						<AuthComponent />
+						<AuthComponent favoriteCities={favoriteCities} />
 					</div>
 					<div className="block md:hidden p-4">
-						<AuthComponent />
+						<AuthComponent favoriteCities={favoriteCities} />
 					</div>
 				</div>
 
@@ -222,6 +265,14 @@ export default function Home() {
 							{weather.state && `, ${weather.state}`}
 							{weather.sys?.country && `, ${weather.sys.country}`}
 						</h2>
+						{auth.currentUser && (
+							<button
+								onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
+								className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+							>
+								Add to Favorites
+							</button>
+						)}
 					</div>
 				)}
 
