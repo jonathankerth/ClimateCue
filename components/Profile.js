@@ -5,8 +5,11 @@ import {
 	updateEmail,
 	updatePassword,
 	deleteUser,
+	sendEmailVerification,
+	EmailAuthProvider,
+	reauthenticateWithCredential,
 } from "firebase/auth";
-import { db, storage } from "@/lib/firebase"; // Assuming you have firebase storage setup
+import { db, storage } from "@/lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
 	collection,
@@ -24,6 +27,8 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [showAccountSettings, setShowAccountSettings] = useState(false);
+	const [currentPassword, setCurrentPassword] = useState("");
+	const [notification, setNotification] = useState("");
 
 	const fetchFavoriteCities = useCallback(async () => {
 		try {
@@ -66,22 +71,54 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 	};
 
 	const handleEmailChange = () => {
-		updateEmail(auth.currentUser, newEmail)
-			.then(() => {
-				console.log("Email updated!");
-			})
-			.catch((error) => {
-				console.error("Error updating email:", error);
-			});
+		if (auth.currentUser.emailVerified) {
+			updateEmail(auth.currentUser, newEmail)
+				.then(() => {
+					console.log("Email updated!");
+					setNotification("Your email has been successfully updated.");
+					setNewEmail("");
+				})
+				.catch((error) => {
+					console.error("Error updating email:", error);
+					setNotification("Error updating email.");
+				});
+		} else {
+			sendEmailVerification(auth.currentUser)
+				.then(() => {
+					console.log("Verification email sent!");
+					setNotification(
+						"You need to verify your current email before updating. A verification email has been sent."
+					);
+				})
+				.catch((error) => {
+					console.error("Error sending verification email:", error);
+					setNotification("Error sending verification email.");
+					setNewEmail("");
+				});
+		}
 	};
 
 	const handlePasswordChange = () => {
-		updatePassword(auth.currentUser, newPassword)
+		const credential = EmailAuthProvider.credential(
+			auth.currentUser.email,
+			currentPassword
+		);
+		reauthenticateWithCredential(auth.currentUser, credential)
 			.then(() => {
-				console.log("Password updated!");
+				updatePassword(auth.currentUser, newPassword)
+					.then(() => {
+						console.log("Password updated!");
+						setNotification("Your password has been successfully updated.");
+						setNewPassword("");
+					})
+					.catch((error) => {
+						console.error("Error updating password:", error);
+						setNotification("Error updating password.");
+					});
 			})
 			.catch((error) => {
-				console.error("Error updating password:", error);
+				console.error("Re-authentication failed:", error);
+				setNotification("Re-authentication failed.");
 			});
 	};
 
@@ -112,7 +149,11 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 			<p className="text-lg font-medium text-gray-800 mb-4">
 				Welcome, <span className="text-gray-600">{user.email}</span>
 			</p>
-
+			{notification && (
+				<div className="text-center my-2 p-2 bg-blue-100 text-blue-700 rounded">
+					{notification}
+				</div>
+			)}
 			{/* Favorite Cities List */}
 			<div className="my-4">
 				{favoriteCities.map((city, index) => (
@@ -168,6 +209,13 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 
 					{/* Password Update Form */}
 					<div className="mt-3">
+						<input
+							type="password"
+							placeholder="Current Password"
+							value={currentPassword}
+							onChange={(e) => setCurrentPassword(e.target.value)}
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+						/>
 						<input
 							type="password"
 							placeholder="New Password"
