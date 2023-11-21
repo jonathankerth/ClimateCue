@@ -16,7 +16,7 @@ const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
 	ssr: false,
 });
 
-export default function Home() {
+export default function Home(setGlobalCity) {
 	const [isCelsius, setIsCelsius] = useState(false);
 	const [city, setCity] = useState("");
 	const [weather, setWeather] = useState({});
@@ -63,6 +63,16 @@ export default function Home() {
 		fetchFavoriteCities();
 	}, []);
 
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		fetchWeather();
+	};
+
+	const updateCityFromProfile = (cityName) => {
+		setCity(cityName);
+		fetchWeather(cityName);
+	};
+
 	const saveFavoriteCity = async (cityName) => {
 		if (!auth.currentUser) {
 			console.error("No user logged in");
@@ -86,17 +96,14 @@ export default function Home() {
 			console.error("Error adding favorite city:", error);
 		}
 	};
-
-	const fetchWeather = async (e) => {
-		e.preventDefault();
-		console.log("fetchWeather called");
-		if (!city) {
+	const fetchWeather = async (cityName = city) => {
+		if (!cityName) {
 			setError("City name cannot be empty");
 			return;
 		}
 		setLoading(true);
 		try {
-			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
+			const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`;
 			const geocodingResponse = await axios.get(geocodingUrl);
 
 			if (geocodingResponse.data.length === 0) {
@@ -229,10 +236,16 @@ export default function Home() {
 			<div className="relative z-10 flex flex-col w-full">
 				<div className="relative z-10 w-full">
 					<div className="absolute top-4 right-4 z-20 hidden md:block">
-						<AuthComponent favoriteCities={favoriteCities} />
+						<AuthComponent
+							favoriteCities={favoriteCities}
+							setCityFromProfile={updateCityFromProfile}
+						/>
 					</div>
 					<div className="block md:hidden p-4">
-						<AuthComponent favoriteCities={favoriteCities} />
+						<AuthComponent
+							favoriteCities={favoriteCities}
+							setCityFromProfile={updateCityFromProfile}
+						/>
 					</div>
 				</div>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import {
@@ -9,13 +9,11 @@ import {
 	getDocs,
 } from "firebase/firestore";
 
-const Profile = ({ user, userFavoriteCities, updateUserFavoriteCities }) => {
-	// Use userFavoriteCities prop to display the list of favorite cities
-	useEffect(() => {
-		setFavoriteCities(userFavoriteCities);
-	}, [userFavoriteCities]);
+const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 	const auth = getAuth();
-	const [favoriteCities, setFavoriteCities] = React.useState([]);
+	const [favoriteCities, setFavoriteCities] = useState(
+		userFavoriteCities || []
+	);
 
 	const fetchFavoriteCities = useCallback(async () => {
 		try {
@@ -28,7 +26,7 @@ const Profile = ({ user, userFavoriteCities, updateUserFavoriteCities }) => {
 			setFavoriteCities(cities);
 		} catch (error) {
 			console.error("Error fetching favorite cities:", error);
-			setFavoriteCities([]); // Ensure favoriteCities is always an array
+			setFavoriteCities([]);
 		}
 	}, [user.uid]);
 
@@ -47,7 +45,7 @@ const Profile = ({ user, userFavoriteCities, updateUserFavoriteCities }) => {
 			querySnapshot.forEach(async (doc) => {
 				await deleteDoc(doc.ref);
 			});
-			fetchFavoriteCities(); // Refresh cities list
+			fetchFavoriteCities();
 		} catch (error) {
 			console.error("Error removing favorite city:", error);
 		}
@@ -63,21 +61,24 @@ const Profile = ({ user, userFavoriteCities, updateUserFavoriteCities }) => {
 				Welcome, <span className="text-gray-600">{user.email}</span>
 			</p>
 			<div className="my-4">
-				{favoriteCities &&
-					favoriteCities.map((city, index) => (
-						<div
-							key={index}
-							className="flex justify-between items-center bg-gray-100 p-2 rounded mb-2"
+				{favoriteCities.map((city, index) => (
+					<div
+						key={index}
+						className="flex justify-between items-center bg-gray-100 p-2 rounded mb-2 hover:bg-gray-200 transition duration-300 cursor-pointer"
+						onClick={() => onCitySelect(city)}
+					>
+						<p className="text-lg font-medium text-gray-800">{city}</p>
+						<button
+							onClick={(e) => {
+								e.stopPropagation();
+								removeFavoriteCity(city);
+							}}
+							className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition duration-300"
 						>
-							<p className="text-lg font-medium text-gray-800">{city}</p>
-							<button
-								onClick={() => removeFavoriteCity(city)} // Pass the city as an argument
-								className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-							>
-								Remove
-							</button>
-						</div>
-					))}
+							Remove
+						</button>
+					</div>
+				))}
 			</div>
 			<button
 				onClick={handleLogout}
