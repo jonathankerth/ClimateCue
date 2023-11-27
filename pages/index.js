@@ -235,49 +235,56 @@ export default function Home(setGlobalCity) {
 			<div className="relative z-10 flex flex-col w-full">
 				{/* Conditional rendering based on user authentication */}
 				{currentUser ? (
-					// When user is logged in, AuthComponent takes full width
-					<div className="relative z-20">
+					// When user is logged in, AuthComponent takes full width on all screen sizes
+					<div className="w-full md:sticky md:top-4 md:right-4 z-20 md:w-auto md:self-start">
+						{" "}
+						{/* Use "sticky" for mobile and "self-start" for larger screens */}
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
 						/>
 					</div>
 				) : (
-					// When not logged in, position AuthComponent to the right
-					<div className="absolute top-4 right-4 z-20">
+					// When not logged in, position AuthComponent to the right on all screen sizes
+					<div className="w-full md:w-auto md:self-start">
+						{" "}
+						{/* Use "self-start" for larger screens */}
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
 						/>
 					</div>
 				)}
+
 				<div className="max-w-[400px] mx-auto my-8">
 					{/* Search Form */}
-					<form
-						onSubmit={fetchWeather}
-						className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
-					>
-						<input
-							onChange={(e) => setCity(e.target.value)}
-							value={city}
-							className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
-							type="text"
-							placeholder="Search city"
-						/>
-						<button
-							type="submit"
-							className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+					<div className="relative">
+						<form
+							onSubmit={fetchWeather}
+							className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
 						>
-							<BsSearch size={20} />
-						</button>
-						<button
-							type="button"
-							onClick={fetchRandomWeather}
-							className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-						>
-							Random City
-						</button>
-					</form>
+							<input
+								onChange={(e) => setCity(e.target.value)}
+								value={city}
+								className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
+								type="text"
+								placeholder="Search city"
+							/>
+							<button
+								type="submit"
+								className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+							>
+								<BsSearch size={20} />
+							</button>
+							<button
+								type="button"
+								onClick={fetchRandomWeather}
+								className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+							>
+								Random City
+							</button>
+						</form>
+					</div>
 				</div>
 
 				{/* Temperature Switch */}

@@ -40,7 +40,9 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
 	}, []);
 
 	return (
-		<div className="text-center" ref={containerRef}>
+		<div className="text-center relative mt-4">
+			{" "}
+			{/* Added "relative" class */}
 			{currentUser ? (
 				<Profile
 					user={currentUser}
