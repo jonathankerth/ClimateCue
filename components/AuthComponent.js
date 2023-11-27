@@ -40,9 +40,9 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
 	}, []);
 
 	return (
-		<div className="text-center relative mt-4">
+		<div className="flex flex-col mt-4">
 			{" "}
-			{/* Added "relative" class */}
+			{/* Added margin-top and flex class */}
 			{currentUser ? (
 				<Profile
 					user={currentUser}

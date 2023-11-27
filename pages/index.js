@@ -2,7 +2,7 @@ import Image from "next/image";
 import { BsSearch } from "react-icons/bs";
 import Head from "next/head";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -32,16 +32,31 @@ export default function Home(setGlobalCity) {
 	const auth = getAuth();
 	const citiesCollectionRef = collection(db, "favoriteCities");
 	const [favoriteCities, setFavoriteCities] = useState([]);
-	const fetchFavoriteCities = async () => {
+	const fetchFavoriteCities = useCallback(async () => {
+		if (!auth.currentUser) {
+			console.error("No user logged in");
+			setFavoriteCities([]); // Clear the list if no user is logged in
+			return;
+		}
+
 		try {
-			const citiesCollectionRef = collection(db, "favoriteCities");
-			const querySnapshot = await getDocs(citiesCollectionRef);
+			const q = query(
+				collection(db, "favoriteCities"),
+				where("userId", "==", auth.currentUser.uid) // Filter by the logged-in user's ID
+			);
+
+			const querySnapshot = await getDocs(q);
 			const cities = querySnapshot.docs.map((doc) => doc.data().city);
 			setFavoriteCities(cities);
 		} catch (error) {
-			console.error("Error fetching favorite cities:", error);
+			console.error("Error fetching favorite cities for user:", error);
+			setFavoriteCities([]);
 		}
-	};
+	}, [auth.currentUser]);
+	useEffect(() => {
+		fetchFavoriteCities();
+	}, [fetchFavoriteCities]);
+
 	const [currentUser, setCurrentUser] = useState(null);
 	useEffect(() => {
 		const auth = getAuth();
@@ -59,12 +74,8 @@ export default function Home(setGlobalCity) {
 		return () => unsubscribe();
 	}, []);
 
-	useEffect(() => {
-		fetchFavoriteCities();
-	}, []);
-
 	const handleSubmit = (e) => {
-		e.preventDefault();
+		e.preventDefault(); // Prevent form from submitting and causing a page refresh
 		fetchWeather();
 	};
 
@@ -72,7 +83,6 @@ export default function Home(setGlobalCity) {
 		setCity(cityName);
 		fetchWeather(cityName);
 	};
-
 	const saveFavoriteCity = async (cityName) => {
 		if (!auth.currentUser) {
 			console.error("No user logged in");
@@ -90,12 +100,14 @@ export default function Home(setGlobalCity) {
 				city: cityName.trim(),
 			});
 			console.log(`${cityName} added to favorites`);
-			// Fetch the updated list of favorite cities
-			fetchFavoriteCities();
+
+			// Update the favoriteCities state
+			setFavoriteCities((prevCities) => [...prevCities, cityName.trim()]);
 		} catch (error) {
 			console.error("Error adding favorite city:", error);
 		}
 	};
+
 	const fetchWeather = async (cityName = city) => {
 		if (!cityName) {
 			setError("City name cannot be empty");
@@ -235,20 +247,16 @@ export default function Home(setGlobalCity) {
 			<div className="relative z-10 flex flex-col w-full">
 				{/* Conditional rendering based on user authentication */}
 				{currentUser ? (
-					// When user is logged in, AuthComponent takes full width on all screen sizes
-					<div className="w-full md:sticky md:top-4 md:right-4 z-20 md:w-auto md:self-start">
-						{" "}
-						{/* Use "sticky" for mobile and "self-start" for larger screens */}
+					// When user is logged in, center AuthComponent
+					<div className="w-full  md:top-4 md:right-4 z-20 md:w-auto md:self-center">
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
 						/>
 					</div>
 				) : (
-					// When not logged in, position AuthComponent to the right on all screen sizes
-					<div className="w-full md:w-auto md:self-start">
-						{" "}
-						{/* Use "self-start" for larger screens */}
+					// When not logged in, position AuthComponent to the right
+					<div className="w-full mr-8 justify-end md:w-auto md:self-end">
 						<AuthComponent
 							favoriteCities={favoriteCities}
 							setCityFromProfile={updateCityFromProfile}
@@ -260,7 +268,7 @@ export default function Home(setGlobalCity) {
 					{/* Search Form */}
 					<div className="relative">
 						<form
-							onSubmit={fetchWeather}
+							onSubmit={handleSubmit}
 							className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
 						>
 							<input
@@ -335,7 +343,6 @@ export default function Home(setGlobalCity) {
 						{error}
 					</div>
 				)}
-
 				{/* Weather Map */}
 				<div className="w-full max-w-[600px] mx-auto">
 					<WeatherMap

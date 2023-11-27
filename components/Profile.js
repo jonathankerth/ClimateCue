@@ -46,8 +46,8 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
 	}, [user.uid]);
 
 	useEffect(() => {
-		fetchFavoriteCities();
-	}, [fetchFavoriteCities]);
+		setFavoriteCities(userFavoriteCities);
+	}, [userFavoriteCities]);
 
 	const removeFavoriteCity = async (cityName) => {
 		try {
