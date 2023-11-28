@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 const TemperatureSwitch = ({ isCelsius, onToggle }) => {
   return (
@@ -16,19 +16,19 @@ const TemperatureSwitch = ({ isCelsius, onToggle }) => {
         <label
           htmlFor="temp-switch"
           className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${
-            isCelsius ? "bg-blue-500" : "bg-gray-300"
+            isCelsius ? 'bg-blue-500' : 'bg-gray-300'
           }`}
         >
           <span
             className={`block w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
-              isCelsius ? "translate-x-0" : "translate-x-4"
+              isCelsius ? 'translate-x-0' : 'translate-x-4'
             }`}
           ></span>
         </label>
       </div>
       <span className="font-medium text-lg text-white">°F</span>
     </div>
-  );
-};
+  )
+}
 
-export default TemperatureSwitch;
+export default TemperatureSwitch

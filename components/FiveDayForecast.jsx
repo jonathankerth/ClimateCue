@@ -1,17 +1,17 @@
-import React from "react";
-import Image from "next/image";
+import React from 'react'
+import Image from 'next/image'
 
 const FiveDayForecast = ({ forecast, isCelsius }) => {
   const toCelsius = (fahrenheit) => {
-    return ((fahrenheit - 32) * 5) / 9;
-  };
+    return ((fahrenheit - 32) * 5) / 9
+  }
 
   if (!forecast || !Array.isArray(forecast) || forecast.length === 0) {
     return (
       <div className="text-center text-gray-500 text-lg">
         No forecast data available.
       </div>
-    );
+    )
   }
 
   return (
@@ -27,7 +27,7 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
           >
             <p className="font-medium text-lg">
               {new Date(day.dt * 1000).toLocaleDateString(undefined, {
-                weekday: "short",
+                weekday: 'short',
               })}
             </p>
             <Image
@@ -46,7 +46,7 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FiveDayForecast;
+export default FiveDayForecast

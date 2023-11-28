@@ -1,14 +1,14 @@
 // Weather.jsx
-import Image from "next/image";
-import React from "react";
+import Image from 'next/image'
+import React from 'react'
 
 const Weather = ({ data, isCelsius }) => {
-  const location = data.name ? data.name : "";
-  const state = data.state ? data.state : "";
-  const country = data.country ? data.country : "";
+  const location = data.name ? data.name : ''
+  const state = data.state ? data.state : ''
+  const country = data.country ? data.country : ''
   const toCelsius = (fahrenheit) => {
-    return ((fahrenheit - 32) * 5) / 9;
-  };
+    return ((fahrenheit - 32) * 5) / 9
+  }
 
   return (
     <div className="relative flex flex-col max-w-[500px] w-full m-auto p-4 text-gray-300 z-10 bg-black/50 backdrop-blur-md rounded-lg shadow-lg">
@@ -48,7 +48,7 @@ const Weather = ({ data, isCelsius }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Weather;
+export default Weather
