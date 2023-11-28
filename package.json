@@ -1,31 +1,34 @@
 {
-	"name": "weather-website",
-	"version": "1.1.0",
-	"private": true,
-	"scripts": {
-		"dev": "next dev",
-		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
-	},
-	"dependencies": {
-		"@fortawesome/fontawesome-svg-core": "^6.4.2",
-		"@fortawesome/free-solid-svg-icons": "^6.4.2",
-		"@fortawesome/react-fontawesome": "^0.2.0",
-		"autoprefixer": "10.4.14",
-		"axios": "^1.4.0",
-		"eslint": "8.42.0",
-		"eslint-config-next": "13.4.4",
-		"firebase": "^9.6.10",
-		"firestore": "^1.1.6",
-		"leaflet": "^1.9.4",
-		"next": "13.4.4",
-		"postcss": "8.4.24",
-		"react": "18.2.0",
-		"react-dom": "18.2.0",
-		"react-icons": "^4.9.0",
-		"react-leaflet": "^4.2.1",
-		"react-select": "^5.7.3",
-		"tailwindcss": "^3.3.2"
-	}
+  "name": "weather-website",
+  "version": "1.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
+    "eslint": "8.42.0",
+    "eslint-config-next": "13.4.4",
+    "firebase": "^9.6.10",
+    "firestore": "^1.1.6",
+    "leaflet": "^1.9.4",
+    "next": "13.4.4",
+    "postcss": "8.4.24",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.9.0",
+    "react-leaflet": "^4.2.1",
+    "react-select": "^5.7.3",
+    "tailwindcss": "^3.3.2"
+  },
+  "devDependencies": {
+    "prettier": "^3.1.0"
+  }
 }
