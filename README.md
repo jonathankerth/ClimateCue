@@ -68,6 +68,3 @@ Climate Cue is released under the [MIT License](LICENSE).
 
 For questions, suggestions, or feedback, please contact [Jonathan Gallardo-Kerth](https://github.com/jonathankerth).
 
-```
-
-```
