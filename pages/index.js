@@ -224,7 +224,16 @@ export default function Home(setGlobalCity) {
   }
 
   return (
-    <div className="relative flex flex-col bg-cover bg-no-repeat min-h-screen w-full">
+    <div
+      className="relative flex flex-col min-h-screen w-full"
+      style={{
+        backgroundImage:
+          'url("https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <Head>
         <title>Weather Website</title>
         <meta
@@ -234,14 +243,6 @@ export default function Home(setGlobalCity) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Image
-        src="https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80"
-        alt="background img"
-        layout="fill"
-        objectFit="cover"
-        className="z-[-1]"
-        priority
-      />
       <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
       <div className="relative z-10 flex flex-col w-full">
