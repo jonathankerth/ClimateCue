@@ -11,6 +11,7 @@ import Weather from '../components/Weather'
 import TemperatureSwitch from '../components/TemperatureSwitch'
 import FiveDayForecast from '@/components/FiveDayForecast'
 import AuthComponent from '../components/AuthComponent'
+import WeatherOutfitRecommendation from '@/components/WeatherOutfitRecommendation.js'
 
 const WeatherMap = dynamic(() => import('../components/WeatherMap'), {
   ssr: false,
@@ -327,6 +328,13 @@ export default function Home(setGlobalCity) {
         <div className="flex flex-col items-center">
           {Object.keys(weather).length !== 0 && (
             <Weather data={weather} isCelsius={isCelsius} />
+          )}
+        </div>
+
+        {/* GPT Outfit Recomendation */}
+        <div className="flex flex-col items-center mt-4">
+          {Object.keys(weather).length !== 0 && (
+            <WeatherOutfitRecommendation weatherData={weather} />
           )}
         </div>
 
