@@ -267,34 +267,39 @@ export default function Home(setGlobalCity) {
         )}
 
         <div className="max-w-[400px] mx-auto my-8">
-          {/* Search Form */}
-          <div className="relative">
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
+          >
+            <input
+              onChange={(e) => setCity(e.target.value)}
+              value={city}
+              className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
+              type="text"
+              placeholder="Search city"
+              aria-label="Search for a city" // Accessibility improvement
+            />
+            <button
+              type="submit"
+              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
             >
-              <input
-                onChange={(e) => setCity(e.target.value)}
-                value={city}
-                className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
-                type="text"
-                placeholder="Search city"
-              />
-              <button
-                type="submit"
-                className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-              >
-                <BsSearch size={20} />
-              </button>
-              <button
-                type="button"
-                onClick={fetchRandomWeather}
-                className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-              >
-                Random City
-              </button>
-            </form>
-          </div>
+              <BsSearch size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={fetchRandomWeather}
+              className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+            >
+              Random City
+            </button>
+          </form>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Temperature Switch */}
