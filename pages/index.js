@@ -236,9 +236,9 @@ export default function Home(setGlobalCity) {
       }}
     >
       <Head>
-        <title>Weather Website</title>
+        <title>Climate Cue</title>
         <meta
-          name="description"
+          name="Climate Cue"
           content="Weather Website created by Jonathan Gallardo-Kerth"
         />
         <link rel="icon" href="/favicon.ico" />
