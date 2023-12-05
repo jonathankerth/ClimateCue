@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useState } from "react"
 import {
   getAuth,
   signOut,
@@ -8,37 +8,37 @@ import {
   sendEmailVerification,
   EmailAuthProvider,
   reauthenticateWithCredential,
-} from 'firebase/auth'
-import { db, storage } from '@/lib/firebase'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+} from "firebase/auth"
+import { db } from "@/lib/firebase"
 import {
   collection,
   query,
   where,
   deleteDoc,
   getDocs,
-} from 'firebase/firestore'
+} from "firebase/firestore"
+import Subscribe from "./Subscribe"
 
 const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState(userFavoriteCities || [])
-  const [newEmail, setNewEmail] = useState('')
-  const [newPassword, setNewPassword] = useState('')
+  const [newEmail, setNewEmail] = useState("")
+  const [newPassword, setNewPassword] = useState("")
   const [showAccountSettings, setShowAccountSettings] = useState(false)
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [notification, setNotification] = useState('')
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [notification, setNotification] = useState("")
 
   const fetchFavoriteCities = useCallback(async () => {
     try {
       const q = query(
-        collection(db, 'favoriteCities'),
-        where('userId', '==', user.uid)
+        collection(db, "favoriteCities"),
+        where("userId", "==", user.uid)
       )
       const querySnapshot = await getDocs(q)
       const cities = querySnapshot.docs.map((doc) => doc.data().city)
       setFavoriteCities(cities)
     } catch (error) {
-      console.error('Error fetching favorite cities:', error)
+      console.error("Error fetching favorite cities:", error)
       setFavoriteCities([])
     }
   }, [user.uid])
@@ -50,9 +50,9 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const removeFavoriteCity = async (cityName) => {
     try {
       const q = query(
-        collection(db, 'favoriteCities'),
-        where('userId', '==', auth.currentUser.uid),
-        where('city', '==', cityName)
+        collection(db, "favoriteCities"),
+        where("userId", "==", auth.currentUser.uid),
+        where("city", "==", cityName)
       )
       const querySnapshot = await getDocs(q)
       querySnapshot.forEach(async (doc) => {
@@ -60,38 +60,38 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
       })
       fetchFavoriteCities()
     } catch (error) {
-      console.error('Error removing favorite city:', error)
+      console.error("Error removing favorite city:", error)
     }
   }
 
   const handleLogout = () => {
-    signOut(auth).catch((error) => console.error('Error signing out:', error))
+    signOut(auth).catch((error) => console.error("Error signing out:", error))
   }
 
   const handleEmailChange = () => {
     if (auth.currentUser.emailVerified) {
       updateEmail(auth.currentUser, newEmail)
         .then(() => {
-          console.log('Email updated!')
-          setNotification('Your email has been successfully updated.')
-          setNewEmail('')
+          console.log("Email updated!")
+          setNotification("Your email has been successfully updated.")
+          setNewEmail("")
         })
         .catch((error) => {
-          console.error('Error updating email:', error)
-          setNotification('Error updating email.')
+          console.error("Error updating email:", error)
+          setNotification("Error updating email.")
         })
     } else {
       sendEmailVerification(auth.currentUser)
         .then(() => {
-          console.log('Verification email sent!')
+          console.log("Verification email sent!")
           setNotification(
-            'You need to verify your current email before updating. A verification email has been sent.'
+            "You need to verify your current email before updating. A verification email has been sent."
           )
         })
         .catch((error) => {
-          console.error('Error sending verification email:', error)
-          setNotification('Error sending verification email.')
-          setNewEmail('')
+          console.error("Error sending verification email:", error)
+          setNotification("Error sending verification email.")
+          setNewEmail("")
         })
     }
   }
@@ -105,18 +105,18 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
       .then(() => {
         updatePassword(auth.currentUser, newPassword)
           .then(() => {
-            console.log('Password updated!')
-            setNotification('Your password has been successfully updated.')
-            setNewPassword('')
+            console.log("Password updated!")
+            setNotification("Your password has been successfully updated.")
+            setNewPassword("")
           })
           .catch((error) => {
-            console.error('Error updating password:', error)
-            setNotification('Error updating password.')
+            console.error("Error updating password:", error)
+            setNotification("Error updating password.")
           })
       })
       .catch((error) => {
-        console.error('Re-authentication failed:', error)
-        setNotification('Re-authentication failed.')
+        console.error("Re-authentication failed:", error)
+        setNotification("Re-authentication failed.")
       })
   }
 
@@ -124,16 +124,16 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
     // Show a confirmation dialog
     if (
       window.confirm(
-        'Are you sure you want to delete your account? This action cannot be undone.'
+        "Are you sure you want to delete your account? This action cannot be undone."
       )
     ) {
       deleteUser(auth.currentUser)
         .then(() => {
-          console.log('User deleted!')
+          console.log("User deleted!")
           // Additional logic after successful deletion, if needed
         })
         .catch((error) => {
-          console.error('Error deleting user:', error)
+          console.error("Error deleting user:", error)
         })
     }
   }
@@ -173,21 +173,23 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
           </div>
         ))}
       </div>
-
       {/* Toggle Account Settings Button */}
       <button
         onClick={toggleAccountSettings}
         className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 ease-in-out"
       >
-        {showAccountSettings ? 'Hide Account Settings' : 'Account Settings'}
+        {showAccountSettings ? "Hide Account Settings" : "Account Settings"}
       </button>
       {/* Account Settings */}
       {showAccountSettings && (
         <div
           className={`${
-            showAccountSettings ? 'max-h-96 overflow-y-auto' : 'max-h-0'
+            showAccountSettings ? "max-h-96 overflow-y-auto" : "max-h-0"
           } transition-all ease-in-out duration-500`}
         >
+          <div className="mt-4">
+            <Subscribe />
+          </div>
           {/* Email Update Form */}
           <div className="mt-3">
             <input
@@ -239,7 +241,6 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
         </div>
       )}
 
-      {/* Logout Button */}
       <button
         onClick={handleLogout}
         className="mt-4 w-full bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300 ease-in-out"

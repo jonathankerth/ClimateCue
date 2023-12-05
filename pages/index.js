@@ -1,25 +1,33 @@
-import Image from 'next/image'
-import { BsSearch } from 'react-icons/bs'
-import Head from 'next/head'
-import axios from 'axios'
-import { useState, useEffect, useCallback } from 'react'
-import { db } from '@/lib/firebase'
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import dynamic from 'next/dynamic'
-import Weather from '../components/Weather'
-import TemperatureSwitch from '../components/TemperatureSwitch'
-import FiveDayForecast from '@/components/FiveDayForecast'
-import AuthComponent from '../components/AuthComponent'
-import WeatherOutfitRecommendation from '@/components/WeatherOutfitRecommendation.js'
+import Image from "next/image"
+import { BsSearch } from "react-icons/bs"
+import Head from "next/head"
+import axios from "axios"
+import { useState, useEffect, useCallback } from "react"
+import { db } from "@/lib/firebase"
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import dynamic from "next/dynamic"
+import Weather from "../components/Weather"
+import TemperatureSwitch from "../components/TemperatureSwitch"
+import FiveDayForecast from "@/components/FiveDayForecast"
+import AuthComponent from "../components/AuthComponent"
+import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
 
-const WeatherMap = dynamic(() => import('../components/WeatherMap'), {
+const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
 })
 
 export default function Home(setGlobalCity) {
   const [isCelsius, setIsCelsius] = useState(false)
-  const [city, setCity] = useState('')
+  const [city, setCity] = useState("")
   const [weather, setWeather] = useState({})
   const [forecast, setForecast] = useState([])
   const [loading, setLoading] = useState(false)
@@ -31,26 +39,28 @@ export default function Home(setGlobalCity) {
     lon: 0,
   })
   const auth = getAuth()
-  const citiesCollectionRef = collection(db, 'favoriteCities')
+  const citiesCollectionRef = collection(db, "favoriteCities")
   const [favoriteCities, setFavoriteCities] = useState([])
+  const [isUserSubscribed, setIsUserSubscribed] = useState(false)
+
   const fetchFavoriteCities = useCallback(async () => {
     if (!auth.currentUser) {
-      console.error('No user logged in')
+      console.error("No user logged in")
       setFavoriteCities([]) // Clear the list if no user is logged in
       return
     }
 
     try {
       const q = query(
-        collection(db, 'favoriteCities'),
-        where('userId', '==', auth.currentUser.uid) // Filter by the logged-in user's ID
+        collection(db, "favoriteCities"),
+        where("userId", "==", auth.currentUser.uid) // Filter by the logged-in user's ID
       )
 
       const querySnapshot = await getDocs(q)
       const cities = querySnapshot.docs.map((doc) => doc.data().city)
       setFavoriteCities(cities)
     } catch (error) {
-      console.error('Error fetching favorite cities for user:', error)
+      console.error("Error fetching favorite cities for user:", error)
       setFavoriteCities([])
     }
   }, [auth.currentUser])
@@ -61,13 +71,21 @@ export default function Home(setGlobalCity) {
   const [currentUser, setCurrentUser] = useState(null)
   useEffect(() => {
     const auth = getAuth()
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in
         setCurrentUser(user)
+
+        // Fetch subscription status from Firebase
+        const userRef = doc(db, "users", user.uid)
+        const userDoc = await getDoc(userRef)
+        if (userDoc.exists()) {
+          setIsUserSubscribed(userDoc.data().isSubscribed) // Update based on Firebase data
+        }
       } else {
         // No user is signed in
         setCurrentUser(null)
+        setIsUserSubscribed(false) // Reset subscription status
       }
     })
 
@@ -86,12 +104,12 @@ export default function Home(setGlobalCity) {
   }
   const saveFavoriteCity = async (cityName) => {
     if (!auth.currentUser) {
-      console.error('No user logged in')
+      console.error("No user logged in")
       return
     }
 
-    if (!cityName || cityName.trim() === '') {
-      console.error('No city selected')
+    if (!cityName || cityName.trim() === "") {
+      console.error("No city selected")
       return
     }
 
@@ -105,13 +123,13 @@ export default function Home(setGlobalCity) {
       // Update the favoriteCities state
       setFavoriteCities((prevCities) => [...prevCities, cityName.trim()])
     } catch (error) {
-      console.error('Error adding favorite city:', error)
+      console.error("Error adding favorite city:", error)
     }
   }
 
   const fetchWeather = async (cityName = city) => {
     if (!cityName) {
-      setError('City name cannot be empty')
+      setError("City name cannot be empty")
       return
     }
     setLoading(true)
@@ -120,7 +138,7 @@ export default function Home(setGlobalCity) {
       const geocodingResponse = await axios.get(geocodingUrl)
 
       if (geocodingResponse.data.length === 0) {
-        throw new Error('City not found')
+        throw new Error("City not found")
       }
 
       const { lat, lon, country, state } = geocodingResponse.data[0]
@@ -162,14 +180,14 @@ export default function Home(setGlobalCity) {
 
   const fetchRandomWeather = async () => {
     setLoading(true)
-    setCity('')
+    setCity("")
     try {
       const min_population = 2697000
       const max_population = 100000000
 
       const cityUrl = `https://api.api-ninjas.com/v1/city?min_population=${min_population}&max_population=${max_population}&limit=30`
       const cityResponse = await axios.get(cityUrl, {
-        headers: { 'X-Api-Key': process.env.NEXT_PUBLIC_API_NINJA_KEY },
+        headers: { "X-Api-Key": process.env.NEXT_PUBLIC_API_NINJA_KEY },
       })
       const cities = cityResponse.data
 
@@ -216,7 +234,7 @@ export default function Home(setGlobalCity) {
   }
 
   useEffect(() => {
-    console.log('Component mounted, fetching random weather')
+    console.log("Component mounted, fetching random weather")
     fetchRandomWeather()
   }, [])
 
@@ -230,9 +248,9 @@ export default function Home(setGlobalCity) {
       style={{
         backgroundImage:
           'url("https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <Head>
@@ -335,13 +353,12 @@ export default function Home(setGlobalCity) {
             <Weather data={weather} isCelsius={isCelsius} />
           )}
         </div>
-
-        {/* GPT Outfit Recomendation */}
-        <div className="flex flex-col items-center mt-4">
-          {Object.keys(weather).length !== 0 && (
+        {/* GPT Outfit Recommendation */}
+        {isUserSubscribed && Object.keys(weather).length !== 0 && (
+          <div className="flex flex-col items-center mt-4">
             <WeatherOutfitRecommendation weatherData={weather} />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Five-Day Forecast */}
         {forecast.length > 0 && (
