@@ -16,6 +16,8 @@ import {
   where,
   deleteDoc,
   getDocs,
+  doc,
+  getDoc,
 } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 
@@ -27,6 +29,22 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const [showAccountSettings, setShowAccountSettings] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("")
   const [notification, setNotification] = useState("")
+  const [firstName, setFirstName] = useState("")
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        const userRef = doc(db, "users", user.uid)
+        const userDoc = await getDoc(userRef)
+        if (userDoc.exists()) {
+          setFirstName(userDoc.data().firstName) // Set the first name
+          // ... other user data handling
+        }
+      }
+    }
+
+    fetchUserData()
+  }, [user])
 
   const fetchFavoriteCities = useCallback(async () => {
     try {
@@ -145,7 +163,7 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
     <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
       {/* User Greeting */}
       <p className="text-lg font-medium text-gray-800 mb-4">
-        Welcome, <span className="text-gray-600">{user.email}</span>
+        Welcome, <span className="text-gray-600">{firstName}</span>
       </p>
       {notification && (
         <div className="text-center my-2 p-2 bg-blue-100 text-blue-700 rounded">

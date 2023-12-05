@@ -9,6 +9,8 @@ const Signup = ({ setAuthMode }) => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState(null)
   const auth = getAuth()
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
 
   const handleSignup = async () => {
     if (password !== confirmPassword) {
@@ -24,15 +26,15 @@ const Signup = ({ setAuthMode }) => {
       )
       const user = userCredential.user
 
-      // Create a new document in Firestore for the signed up user
-      const userDocRef = doc(db, "users", user.uid)
-      await setDoc(userDocRef, {
+      await setDoc(doc(db, "users", user.uid), {
+        firstName,
+        lastName,
         email: user.email,
         favoriteCities: [],
         isSubscribed: false,
       })
 
-      setAuthMode("none") // Or redirect as needed
+      setAuthMode("none")
     } catch (error) {
       setError(error.message)
     }
@@ -41,6 +43,21 @@ const Signup = ({ setAuthMode }) => {
   return (
     <div className="bg-gray-100 rounded-lg border border-gray-300 p-6 w-full max-w-xs mx-auto">
       <h1 className="text-xl font-semibold mb-4">Sign Up for an Account</h1>
+      <input
+        type="text"
+        placeholder="First Name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded mb-3 focus:outline-none focus:ring-1 focus:ring-gray-400"
+      />
+      <input
+        type="text"
+        placeholder="Last Name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded mb-3 focus:outline-none focus:ring-1 focus:ring-gray-400"
+      />
+
       <input
         type="email"
         placeholder="Email"
