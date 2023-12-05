@@ -153,14 +153,17 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
         </div>
       )}
       {/* Favorite Cities List */}
-      <div className="my-4">
+      <div className="my-4 p-4 bg-gray-50 rounded-lg shadow">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
+          Your Favorite Cities
+        </h2>
         {favoriteCities.map((city, index) => (
           <div
             key={index}
-            className="flex justify-between items-center bg-gray-100 p-2 rounded mb-2 hover:bg-gray-200 transition duration-300 cursor-pointer"
+            className="flex justify-between items-center bg-white p-2 rounded mb-2 hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
             onClick={() => onCitySelect(city)}
           >
-            <p className="text-lg font-medium text-gray-800">{city}</p>
+            <p className="text-md font-medium text-gray-800">{city}</p>
             <button
               onClick={(e) => {
                 e.stopPropagation()
@@ -173,6 +176,7 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
           </div>
         ))}
       </div>
+
       {/* Toggle Account Settings Button */}
       <button
         onClick={toggleAccountSettings}
