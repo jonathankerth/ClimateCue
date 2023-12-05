@@ -55,8 +55,11 @@ const Subscribe = () => {
     <div className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow-lg">
       {isSubscribed ? (
         <>
-          <p className="text-lg text-green-700 mb-4">
-            You are currently subscribed.
+          <p className="text-lg text-green-700 mb-4 text-center">
+            You are currently subscribed. Thank you!
+          </p>
+          <p className="text-lg text-green-700 mb-4 text-center ">
+            For any feature requests please email Jonathanpkerth@gmail.com
           </p>
           <button
             onClick={handleManageSubscription}
