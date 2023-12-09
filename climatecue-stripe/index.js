@@ -3,6 +3,7 @@ const admin = require("firebase-admin")
 const express = require("express")
 const cors = require("cors")
 const stripe = require("stripe")(functions.config().stripe.secret)
+const bodyParser = require("body-parser")
 
 admin.initializeApp()
 
@@ -10,118 +11,131 @@ const app = express()
 app.use(cors({ origin: true }))
 app.use(express.json())
 
-// Endpoint to handle subscription
-app.post("/subscribe", async (req, res) => {
-  const { email, firebaseUID } = req.body
-  try {
-    // Check if a customer with the email already exists in Stripe
-    let customer = await stripe.customers.list({ email: email })
+// Additional middleware for raw bodies for webhook endpoint
+app.use("/webhook", bodyParser.raw({ type: "application/json" }))
 
-    // If the customer exists, update their metadata; otherwise, create a new customer
+const authenticateUser = async (req, res, next) => {
+  try {
+    const idToken = req.headers.authorization
+    if (!idToken) {
+      return res.status(403).json({ error: "Unauthorized" })
+    }
+    const decodedToken = await admin.auth().verifyIdToken(idToken)
+    req.user = decodedToken
+    next()
+  } catch (error) {
+    console.error("Firebase Authentication error:", error)
+    return res.status(403).json({ error: "Unauthorized" })
+  }
+}
+
+app.post("/subscribe", authenticateUser, async (req, res) => {
+  const { email } = req.user
+  try {
+    let customer = await stripe.customers.list({ email: email })
+    const metadata = { firebaseUID: req.user.uid, userEmail: email }
+
     if (customer && customer.data && customer.data.length > 0) {
       customer = await stripe.customers.update(customer.data[0].id, {
-        metadata: { firebaseUID: firebaseUID },
+        metadata,
       })
     } else {
-      customer = await stripe.customers.create({
-        email: email,
-        metadata: { firebaseUID: firebaseUID },
-      })
+      customer = await stripe.customers.create({ email, metadata })
     }
 
-    // Create a subscription for the customer
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
       items: [{ price: "price_1OJPslDg0HhegvarE5ZaGyad" }],
+      metadata,
     })
+
+    await admin
+      .firestore()
+      .collection("users")
+      .where("email", "==", email)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          doc.ref.update({ isSubscribed: true })
+        })
+      })
 
     res.json({
       success: true,
-      message: "Customer created or updated",
       customerID: customer.id,
       subscriptionID: subscription.id,
     })
   } catch (error) {
     console.error("Stripe error:", error)
-    res
-      .status(500)
-      .json({ success: false, message: "Stripe error", error: error.message })
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
-exports.stripeWebhook = functions
-  .region("us-west1")
-  .https.onRequest((request, response) => {
-    const signature = request.headers["stripe-signature"]
-    const webhookSecret = functions.config().stripe.webhooksecret
+app.post("/webhook", async (req, res) => {
+  const signature = req.headers["stripe-signature"]
+  const webhookSecret = functions.config().stripe.webhooksecret
 
-    if (!webhookSecret) {
-      console.error("The webhook secret is undefined.")
-      response
-        .status(400)
-        .send("Configuration error: Webhook secret is undefined")
-      return
-    }
+  if (!webhookSecret) {
+    console.error("The webhook secret is undefined.")
+    return res
+      .status(400)
+      .send("Configuration error: Webhook secret is undefined")
+  }
 
-    let event
+  let event
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.rawBody,
+      signature,
+      webhookSecret
+    )
+  } catch (error) {
+    console.error(`Error in webhook signature verification: ${error.message}`)
+    return res.status(400).send(`Webhook Error: ${error.message}`)
+  }
 
-    try {
-      event = stripe.webhooks.constructEvent(
-        request.rawBody,
-        signature,
-        webhookSecret
-      )
-    } catch (error) {
-      console.error(`Error in webhook signature verification: ${error.message}`)
-      response.status(400).send(`Webhook Error: ${error.message}`)
-      return
-    }
+  try {
+    const usersRef = admin.firestore().collection("users")
 
-    try {
-      switch (event.type) {
-        case "customer.subscription.created":
-        case "customer.subscription.updated":
-        case "customer.subscription.deleted": {
-          const subscription = event.data.object
-          const userId = subscription.metadata.firebaseUID
+    switch (event.type) {
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object
+        const userId = subscription.metadata.firebaseUID
 
-          if (!userId) {
-            console.error("Firebase UID not found in subscription metadata")
-            response.status(200).send("No action taken: Firebase UID not found")
-            return
-          }
-
-          const isSubscribed =
-            event.type !== "customer.subscription.deleted" &&
-            subscription.status === "active"
-
-          admin
-            .firestore()
-            .collection("users")
-            .doc(userId)
-            .update({
-              isSubscribed: isSubscribed,
-            })
-            .then(() => {
-              response
-                .status(200)
-                .send(`Handled ${event.type} for user ${userId}`)
-            })
-            .catch((updateError) => {
-              console.error(`Error updating Firestore: ${updateError.message}`)
-              response
-                .status(500)
-                .send(`Firestore update error: ${updateError.message}`)
-            })
-          break
+        if (!userId) {
+          console.error("Firebase UID not found in subscription metadata")
+          return res.status(400).send("No action taken: Firebase UID not found")
         }
 
-        default:
-          console.log(`Unhandled event type ${event.type}`)
-          response.status(400).send(`Unhandled event type ${event.type}`)
+        const userRef = usersRef.doc(userId)
+        const doc = await userRef.get()
+
+        if (!doc.exists) {
+          console.error(`No document found for user ID: ${userId}`)
+          return res
+            .status(404)
+            .send(`No Firestore document found for user ID: ${userId}`)
+        }
+
+        const isSubscribed = event.type !== "customer.subscription.deleted"
+        await userRef.update({ isSubscribed: isSubscribed })
+
+        res
+          .status(200)
+          .send(`Handled subscription event ${event.type} for user ${userId}`)
+        break
       }
-    } catch (error) {
-      console.error(`Error processing event: ${error.message}`)
-      response.status(500).send(`Internal Server Error: ${error.message}`)
+
+      default:
+        console.log(`Unhandled event type ${event.type}`)
     }
-  })
+    res.status(200).send(`Handled event type ${event.type}`)
+  } catch (error) {
+    console.error(`Error processing event: ${error.message}`)
+    res.status(500).send(`Internal Server Error: ${error.message}`)
+  }
+})
+
+exports.api = functions.region("us-west1").https.onRequest(app)

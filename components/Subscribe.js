@@ -51,6 +51,14 @@ const Subscribe = () => {
     window.location.href = stripePortalUrl
   }
 
+  const auth = getAuth()
+  const user = auth.currentUser
+
+  if (user) {
+    // Use user.uid to set the firebaseUID in metadata
+    const metadata = { firebaseUID: user.uid, userEmail: user.email }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow-lg">
       {isSubscribed ? (
