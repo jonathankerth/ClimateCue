@@ -42,6 +42,7 @@ export default function Home(setGlobalCity) {
   const citiesCollectionRef = collection(db, "favoriteCities")
   const [favoriteCities, setFavoriteCities] = useState([])
   const [isUserSubscribed, setIsUserSubscribed] = useState(false)
+  const [showNotification, setShowNotification] = useState(false)
 
   const fetchFavoriteCities = useCallback(async () => {
     if (!auth.currentUser) {
@@ -120,8 +121,11 @@ export default function Home(setGlobalCity) {
       })
       console.log(`${cityName} added to favorites`)
 
-      // Update the favoriteCities state
       setFavoriteCities((prevCities) => [...prevCities, cityName.trim()])
+
+      setShowNotification(true)
+
+      setTimeout(() => setShowNotification(false), 3000)
     } catch (error) {
       console.error("Error adding favorite city:", error)
     }
@@ -327,6 +331,13 @@ export default function Home(setGlobalCity) {
             onToggle={toggleTemperatureUnit}
           />
         </div>
+
+        {/* Notification */}
+        {showNotification && (
+          <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
+            {weather.name} added to favorites!
+          </div>
+        )}
 
         {/* City Name Display */}
         {weather.name && (
