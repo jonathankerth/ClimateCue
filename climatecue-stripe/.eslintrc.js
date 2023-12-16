@@ -23,6 +23,7 @@ module.exports = {
     "no-restricted-globals": ["error", "name", "length"],
     "prefer-arrow-callback": "error",
     "prettier/prettier": "error", // Add Prettier rules
+    "new-cap": ["error", { capIsNewExceptions: ["Router"] }],
   },
   overrides: [
     {
