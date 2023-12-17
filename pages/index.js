@@ -269,18 +269,17 @@ export default function Home(setGlobalCity) {
       <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
       <div className="relative z-10 flex flex-col w-full">
-        {/* Conditional rendering based on user authentication */}
-        {currentUser ? (
-          // When user is logged in, center AuthComponent
-          <div className="w-full  md:top-4 md:right-4 z-20 md:w-auto md:self-center">
-            <AuthComponent
-              favoriteCities={favoriteCities}
-              setCityFromProfile={updateCityFromProfile}
-            />
-          </div>
-        ) : (
-          // When not logged in, position AuthComponent to the right
-          <div className="w-full mr-8 justify-end md:w-auto md:self-end">
+        {/* AuthComponent - Integrated into document flow on Mobile */}
+        <div className="md:hidden">
+          <AuthComponent
+            favoriteCities={favoriteCities}
+            setCityFromProfile={updateCityFromProfile}
+          />
+        </div>
+
+        {/* AuthComponent - Fixed position on Desktop */}
+        {currentUser && (
+          <div className="hidden md:flex fixed top-4 right-4 z-20">
             <AuthComponent
               favoriteCities={favoriteCities}
               setCityFromProfile={updateCityFromProfile}
@@ -288,112 +287,115 @@ export default function Home(setGlobalCity) {
           </div>
         )}
 
-        <div className="max-w-[400px] mx-auto my-8">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
-          >
-            <input
-              onChange={(e) => setCity(e.target.value)}
-              value={city}
-              className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
-              type="text"
-              placeholder="Search city"
-              aria-label="Search for a city" // Accessibility improvement
-            />
-            <button
-              type="submit"
-              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+        {/* Main Content Area */}
+        <div className="flex flex-col flex-1">
+          <div className="max-w-[400px] mx-auto my-8">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
             >
-              <BsSearch size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={fetchRandomWeather}
-              className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-            >
-              Random City
-            </button>
-          </form>
+              <input
+                onChange={(e) => setCity(e.target.value)}
+                value={city}
+                className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
+                type="text"
+                placeholder="Search city"
+                aria-label="Search for a city" // Accessibility improvement
+              />
+              <button
+                type="submit"
+                className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+              >
+                <BsSearch size={20} />
+              </button>
+              <button
+                type="button"
+                onClick={fetchRandomWeather}
+                className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+              >
+                Random City
+              </button>
+            </form>
 
-          {/* Error Message */}
+            {/* Error Message */}
+            {error && (
+              <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
+                {error}
+              </div>
+            )}
+          </div>
+
+          {/* Temperature Switch */}
+          <div className="flex justify-center my-4">
+            <TemperatureSwitch
+              isCelsius={isCelsius}
+              onToggle={toggleTemperatureUnit}
+            />
+          </div>
+
+          {/* Notification */}
+          {showNotification && (
+            <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
+              {weather.name} added to favorites!
+            </div>
+          )}
+
+          {/* City Name Display */}
+          {weather.name && (
+            <div className="text-center my-4">
+              <h2 className="text-2xl text-white font-bold">
+                Weather in {weather.name}
+                {weather.state && `, ${weather.state}`}
+                {weather.sys?.country && `, ${weather.sys.country}`}
+              </h2>
+              {auth.currentUser && (
+                <button
+                  onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
+                  className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Add to Favorites
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Weather Data */}
+          <div className="flex flex-col items-center">
+            {Object.keys(weather).length !== 0 && (
+              <Weather data={weather} isCelsius={isCelsius} />
+            )}
+          </div>
+          {/* GPT Outfit Recommendation */}
+          {isUserSubscribed && Object.keys(weather).length !== 0 && (
+            <div className="flex flex-col items-center mt-4">
+              <WeatherOutfitRecommendation weatherData={weather} />
+            </div>
+          )}
+
+          {/* Five-Day Forecast */}
+          {forecast.length > 0 && (
+            <div className="p-4">
+              <FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
+            </div>
+          )}
+
+          {/* Loading and Error Messages */}
+          {loading && <div className="text-center text-white">Loading...</div>}
           {error && (
             <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
               {error}
             </div>
           )}
-        </div>
-
-        {/* Temperature Switch */}
-        <div className="flex justify-center my-4">
-          <TemperatureSwitch
-            isCelsius={isCelsius}
-            onToggle={toggleTemperatureUnit}
-          />
-        </div>
-
-        {/* Notification */}
-        {showNotification && (
-          <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
-            {weather.name} added to favorites!
+          {/* Weather Map */}
+          <div className="w-full max-w-[600px] mx-auto">
+            <WeatherMap
+              lat={currentCityCoords.lat}
+              lon={currentCityCoords.lon}
+              isCelsius={isCelsius}
+              cityName={weather.name}
+              key={weatherMapKey}
+            />
           </div>
-        )}
-
-        {/* City Name Display */}
-        {weather.name && (
-          <div className="text-center my-4">
-            <h2 className="text-2xl text-white font-bold">
-              Weather in {weather.name}
-              {weather.state && `, ${weather.state}`}
-              {weather.sys?.country && `, ${weather.sys.country}`}
-            </h2>
-            {auth.currentUser && (
-              <button
-                onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
-                className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Add to Favorites
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Weather Data */}
-        <div className="flex flex-col items-center">
-          {Object.keys(weather).length !== 0 && (
-            <Weather data={weather} isCelsius={isCelsius} />
-          )}
-        </div>
-        {/* GPT Outfit Recommendation */}
-        {isUserSubscribed && Object.keys(weather).length !== 0 && (
-          <div className="flex flex-col items-center mt-4">
-            <WeatherOutfitRecommendation weatherData={weather} />
-          </div>
-        )}
-
-        {/* Five-Day Forecast */}
-        {forecast.length > 0 && (
-          <div className="p-4">
-            <FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
-          </div>
-        )}
-
-        {/* Loading and Error Messages */}
-        {loading && <div className="text-center text-white">Loading...</div>}
-        {error && (
-          <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
-            {error}
-          </div>
-        )}
-        {/* Weather Map */}
-        <div className="w-full max-w-[600px] mx-auto">
-          <WeatherMap
-            lat={currentCityCoords.lat}
-            lon={currentCityCoords.lon}
-            isCelsius={isCelsius}
-            cityName={weather.name}
-            key={weatherMapKey}
-          />
         </div>
       </div>
     </div>
