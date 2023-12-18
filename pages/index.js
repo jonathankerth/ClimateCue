@@ -298,18 +298,16 @@ export default function Home(setGlobalCity) {
       <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
       <div className="relative z-10 flex flex-col w-full">
-        {currentUser && (
-          <div className="hidden md:flex fixed top-4 right-4 z-20">
-            <AuthComponent
-              favoriteCities={favoriteCities}
-              setCityFromProfile={updateCityFromProfile}
-            />
-          </div>
-        )}
-
-        <div className="relative z-10 flex flex-col w-full">
-          {/* Render AuthComponent irrespective of currentUser's status */}
-          <div className="fixed top-4 right-4 z-20">
+        {/* AuthComponent with responsive positioning */}
+        <div className="md:absolute md:top-4 md:right-4 z-20">
+          <AuthComponent
+            favoriteCities={favoriteCities}
+            setCityFromProfile={setCityFromProfile}
+          />
+        </div>
+        <div className="flex flex-col w-full z-10">
+          {/* AuthComponent with responsive positioning */}
+          <div className="fixed top-0 z-30 w-full md:w-auto md:absolute md:top-4 md:right-4">
             <AuthComponent
               favoriteCities={favoriteCities}
               setCityFromProfile={setCityFromProfile}
