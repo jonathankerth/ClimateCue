@@ -39,17 +39,24 @@ export default function Home(setGlobalCity) {
     lon: 0,
   })
   const auth = getAuth()
+
   const citiesCollectionRef = collection(db, "favoriteCities")
   const [favoriteCities, setFavoriteCities] = useState([])
   const [isUserSubscribed, setIsUserSubscribed] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
 
+  const setCityFromProfile = (cityName) => {
+    setCity(cityName)
+    fetchWeather(cityName)
+  }
+
   const fetchFavoriteCities = useCallback(async () => {
-    if (!auth.currentUser) {
-      console.error("No user logged in")
-      setFavoriteCities([]) // Clear the list if no user is logged in
+    if (currentUser && favoriteCities.length > 0) {
       return
     }
+
+    setLoading(true)
+    setCity("")
 
     try {
       const q = query(
@@ -70,29 +77,50 @@ export default function Home(setGlobalCity) {
   }, [fetchFavoriteCities])
 
   const [currentUser, setCurrentUser] = useState(null)
+
+  const [initialLoad, setInitialLoad] = useState(true)
+
   useEffect(() => {
     const auth = getAuth()
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in
         setCurrentUser(user)
 
-        // Fetch subscription status from Firebase
+        // Fetch subscription status and favorite cities
         const userRef = doc(db, "users", user.uid)
         const userDoc = await getDoc(userRef)
-        if (userDoc.exists()) {
-          setIsUserSubscribed(userDoc.data().isSubscribed) // Update based on Firebase data
+        setIsUserSubscribed(
+          userDoc.exists() ? userDoc.data().isSubscribed : false
+        )
+
+        const q = query(
+          collection(db, "favoriteCities"),
+          where("userId", "==", user.uid)
+        )
+        const querySnapshot = await getDocs(q)
+        const cities = querySnapshot.docs.map((doc) => doc.data().city)
+        setFavoriteCities(cities)
+
+        if (cities.length > 0) {
+          setCity(cities[0])
+          fetchWeather(cities[0])
+        } else {
+          // If user has no favorite cities, fetch random weather
+          fetchRandomWeather()
         }
       } else {
-        // No user is signed in
         setCurrentUser(null)
-        setIsUserSubscribed(false) // Reset subscription status
+        setIsUserSubscribed(false)
+        setFavoriteCities([])
+        if (initialLoad) {
+          fetchRandomWeather()
+        }
       }
+      setInitialLoad(false)
     })
 
-    // Cleanup subscription on unmount
     return () => unsubscribe()
-  }, [])
+  }, [auth])
 
   const handleSubmit = (e) => {
     e.preventDefault() // Prevent form from submitting and causing a page refresh
@@ -238,9 +266,10 @@ export default function Home(setGlobalCity) {
   }
 
   useEffect(() => {
-    console.log("Component mounted, fetching random weather")
-    fetchRandomWeather()
-  }, [])
+    if (!initialLoad && !currentUser) {
+      fetchRandomWeather()
+    }
+  }, [currentUser, initialLoad])
 
   const toggleTemperatureUnit = () => {
     setIsCelsius(!isCelsius)
@@ -269,15 +298,6 @@ export default function Home(setGlobalCity) {
       <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
 
       <div className="relative z-10 flex flex-col w-full">
-        {/* AuthComponent - Integrated into document flow on Mobile */}
-        <div className="md:hidden">
-          <AuthComponent
-            favoriteCities={favoriteCities}
-            setCityFromProfile={updateCityFromProfile}
-          />
-        </div>
-
-        {/* AuthComponent - Fixed position on Desktop */}
         {currentUser && (
           <div className="hidden md:flex fixed top-4 right-4 z-20">
             <AuthComponent
@@ -287,114 +307,126 @@ export default function Home(setGlobalCity) {
           </div>
         )}
 
-        {/* Main Content Area */}
-        <div className="flex flex-col flex-1">
-          <div className="max-w-[400px] mx-auto my-8">
-            <form
-              onSubmit={handleSubmit}
-              className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
-            >
-              <input
-                onChange={(e) => setCity(e.target.value)}
-                value={city}
-                className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
-                type="text"
-                placeholder="Search city"
-                aria-label="Search for a city" // Accessibility improvement
-              />
-              <button
-                type="submit"
-                className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-              >
-                <BsSearch size={20} />
-              </button>
-              <button
-                type="button"
-                onClick={fetchRandomWeather}
-                className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-              >
-                Random City
-              </button>
-            </form>
+        <div className="relative z-10 flex flex-col w-full">
+          {/* Render AuthComponent irrespective of currentUser's status */}
+          <div className="fixed top-4 right-4 z-20">
+            <AuthComponent
+              favoriteCities={favoriteCities}
+              setCityFromProfile={setCityFromProfile}
+            />
+          </div>
 
-            {/* Error Message */}
+          {/* Main Content Area */}
+          <div className="flex flex-col flex-1">
+            <div className="max-w-[400px] mx-auto my-8">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
+              >
+                <input
+                  onChange={(e) => setCity(e.target.value)}
+                  value={city}
+                  className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
+                  type="text"
+                  placeholder="Search city"
+                  aria-label="Search for a city" // Accessibility improvement
+                />
+                <button
+                  type="submit"
+                  className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                >
+                  <BsSearch size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={fetchRandomWeather}
+                  className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+                >
+                  Random City
+                </button>
+              </form>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
+                  {error}
+                </div>
+              )}
+            </div>
+
+            {/* Temperature Switch */}
+            <div className="flex justify-center my-4">
+              <TemperatureSwitch
+                isCelsius={isCelsius}
+                onToggle={toggleTemperatureUnit}
+              />
+            </div>
+
+            {/* Notification */}
+            {showNotification && (
+              <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
+                {weather.name} added to favorites!
+              </div>
+            )}
+
+            {/* City Name Display */}
+            {weather.name && (
+              <div className="text-center my-4">
+                <h2 className="text-2xl text-white font-bold">
+                  Weather in {weather.name}
+                  {weather.state && `, ${weather.state}`}
+                  {weather.sys?.country && `, ${weather.sys.country}`}
+                </h2>
+                {auth.currentUser && (
+                  <button
+                    onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
+                    className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Add to Favorites
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Weather Data */}
+            <div className="flex flex-col items-center">
+              {Object.keys(weather).length !== 0 && (
+                <Weather data={weather} isCelsius={isCelsius} />
+              )}
+            </div>
+            {/* GPT Outfit Recommendation */}
+            {isUserSubscribed && Object.keys(weather).length !== 0 && (
+              <div className="flex flex-col items-center mt-4">
+                <WeatherOutfitRecommendation weatherData={weather} />
+              </div>
+            )}
+
+            {/* Five-Day Forecast */}
+            {forecast.length > 0 && (
+              <div className="p-4">
+                <FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
+              </div>
+            )}
+
+            {/* Loading and Error Messages */}
+            {loading && (
+              <div className="text-center text-white">Loading...</div>
+            )}
             {error && (
               <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
                 {error}
               </div>
             )}
-          </div>
-
-          {/* Temperature Switch */}
-          <div className="flex justify-center my-4">
-            <TemperatureSwitch
-              isCelsius={isCelsius}
-              onToggle={toggleTemperatureUnit}
-            />
-          </div>
-
-          {/* Notification */}
-          {showNotification && (
-            <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
-              {weather.name} added to favorites!
+            {/* Weather Map */}
+            <div className="w-full max-w-[600px] mx-auto">
+              <WeatherMap
+                lat={currentCityCoords.lat}
+                lon={currentCityCoords.lon}
+                isCelsius={isCelsius}
+                cityName={weather.name}
+                key={weatherMapKey}
+              />
             </div>
-          )}
-
-          {/* City Name Display */}
-          {weather.name && (
-            <div className="text-center my-4">
-              <h2 className="text-2xl text-white font-bold">
-                Weather in {weather.name}
-                {weather.state && `, ${weather.state}`}
-                {weather.sys?.country && `, ${weather.sys.country}`}
-              </h2>
-              {auth.currentUser && (
-                <button
-                  onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
-                  className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Add to Favorites
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Weather Data */}
-          <div className="flex flex-col items-center">
-            {Object.keys(weather).length !== 0 && (
-              <Weather data={weather} isCelsius={isCelsius} />
-            )}
-          </div>
-          {/* GPT Outfit Recommendation */}
-          {isUserSubscribed && Object.keys(weather).length !== 0 && (
-            <div className="flex flex-col items-center mt-4">
-              <WeatherOutfitRecommendation weatherData={weather} />
-            </div>
-          )}
-
-          {/* Five-Day Forecast */}
-          {forecast.length > 0 && (
-            <div className="p-4">
-              <FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
-            </div>
-          )}
-
-          {/* Loading and Error Messages */}
-          {loading && <div className="text-center text-white">Loading...</div>}
-          {error && (
-            <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
-              {error}
-            </div>
-          )}
-          {/* Weather Map */}
-          <div className="w-full max-w-[600px] mx-auto">
-            <WeatherMap
-              lat={currentCityCoords.lat}
-              lon={currentCityCoords.lon}
-              isCelsius={isCelsius}
-              cityName={weather.name}
-              key={weatherMapKey}
-            />
           </div>
         </div>
       </div>

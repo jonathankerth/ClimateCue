@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import Login from './Login'
-import Signup from './Signup'
-import Profile from './Profile'
+import React, { useState, useRef, useEffect } from "react"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import Login from "./Login"
+import Signup from "./Signup"
+import Profile from "./Profile"
 
 const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
   const [authMode, setAuthMode] = useState(null)
@@ -33,16 +33,18 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
   }
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
 
+  const toggleAuthMode = () => {
+    setAuthMode(authMode === "login" ? "signup" : "login")
+  }
+
   return (
-    <div className="flex flex-col mt-4">
-      {' '}
-      {/* Added margin-top and flex class */}
+    <div className="flex flex-col mt-4" ref={containerRef}>
       {currentUser ? (
         <Profile
           user={currentUser}
@@ -51,23 +53,15 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
         />
       ) : (
         <>
-          {authMode === 'login' && <Login setAuthMode={setAuthMode} />}
-          {authMode === 'signup' && <Signup setAuthMode={setAuthMode} />}
+          {authMode === "login" && <Login setAuthMode={setAuthMode} />}
+          {authMode === "signup" && <Signup setAuthMode={setAuthMode} />}
           {!authMode && (
-            <>
-              <button
-                className="text-xl text-white font-semibold focus:outline-none mr-4"
-                onClick={() => setAuthMode('login')}
-              >
-                Login
-              </button>
-              <button
-                className="text-xl text-white font-semibold focus:outline-none"
-                onClick={() => setAuthMode('signup')}
-              >
-                Sign Up
-              </button>
-            </>
+            <button
+              className="text-xl text-white font-semibold focus:outline-none"
+              onClick={toggleAuthMode}
+            >
+              Login / Signup
+            </button>
           )}
         </>
       )}
