@@ -306,14 +306,6 @@ export default function Home(setGlobalCity) {
           />
         </div>
         <div className="flex flex-col w-full z-10">
-          {/* AuthComponent with responsive positioning */}
-          <div className="fixed top-0 z-30 w-full md:w-auto md:absolute md:top-4 md:right-4">
-            <AuthComponent
-              favoriteCities={favoriteCities}
-              setCityFromProfile={setCityFromProfile}
-            />
-          </div>
-
           {/* Main Content Area */}
           <div className="flex flex-col flex-1">
             <div className="max-w-[400px] mx-auto my-8">
