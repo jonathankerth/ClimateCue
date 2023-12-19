@@ -20,6 +20,7 @@ import TemperatureSwitch from "../components/TemperatureSwitch"
 import FiveDayForecast from "@/components/FiveDayForecast"
 import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
+import EightDayForecast from "@/components/EightDayForecast"
 
 const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
@@ -391,9 +392,24 @@ export default function Home(setGlobalCity) {
             )}
 
             {/* Five-Day Forecast */}
-            {forecast.length > 0 && (
+            {!isUserSubscribed && forecast.length > 0 && (
               <div className="p-4">
-                <FiveDayForecast forecast={forecast} isCelsius={isCelsius} />
+                <FiveDayForecast
+                  city={city}
+                  forecast={forecast}
+                  isCelsius={isCelsius}
+                />
+              </div>
+            )}
+
+            {/* Eight-Day Forecast (for subscribed users) */}
+            {isUserSubscribed && forecast.length > 0 && (
+              <div className="p-4">
+                <EightDayForecast
+                  city={city}
+                  forecast={forecast}
+                  isCelsius={isCelsius}
+                />
               </div>
             )}
 
@@ -406,7 +422,7 @@ export default function Home(setGlobalCity) {
                 {error}
               </div>
             )}
-            {/* Weather Map */}
+
             <div className="w-full max-w-[600px] mx-auto">
               <WeatherMap
                 lat={currentCityCoords.lat}

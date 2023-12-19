@@ -17,7 +17,7 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
   return (
     <div className="relative flex flex-col max-w-[500px] w-full m-auto my-6 p-4 text-gray-300 bg-black/50 backdrop-blur-md rounded-lg shadow-lg">
       <h2 className="text-center text-3xl font-bold mb-4">
-        5-Day Weather Forecast
+        5-Day Average Temperatures
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {forecast.map((day) => (
