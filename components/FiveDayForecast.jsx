@@ -1,5 +1,5 @@
-import React from 'react'
-import Image from 'next/image'
+import React from "react"
+import Image from "next/image"
 
 const FiveDayForecast = ({ forecast, isCelsius }) => {
   const toCelsius = (fahrenheit) => {
@@ -27,7 +27,7 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
           >
             <p className="font-medium text-lg">
               {new Date(day.dt * 1000).toLocaleDateString(undefined, {
-                weekday: 'short',
+                weekday: "short",
               })}
             </p>
             <Image
@@ -36,12 +36,16 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
               width={64}
               height={64}
             />
-            <p className="font-bold text-2xl">
-              {isCelsius
-                ? `${Math.round(toCelsius(day.main.temp))}°C`
-                : `${Math.round(day.main.temp)}°F`}
-            </p>
-            <p className="text-sm capitalize">{day.weather[0].description}</p>
+            {day.main && (
+              <p className="font-bold text-2xl">
+                {isCelsius
+                  ? `${Math.round(toCelsius(day.main.temp))}°C`
+                  : `${Math.round(day.main.temp)}°F`}
+              </p>
+            )}
+            {day.weather[0] && (
+              <p className="text-sm capitalize">{day.weather[0].description}</p>
+            )}
           </div>
         ))}
       </div>

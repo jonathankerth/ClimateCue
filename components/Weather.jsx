@@ -1,13 +1,17 @@
-// Weather.jsx
-import Image from 'next/image'
-import React from 'react'
+import Image from "next/image"
+import React from "react"
 
 const Weather = ({ data, isCelsius }) => {
-  const location = data.name ? data.name : ''
-  const state = data.state ? data.state : ''
-  const country = data.country ? data.country : ''
+  const location = data.name ? data.name : ""
+  const state = data.state ? data.state : ""
+  const country = data.country ? data.country : ""
   const toCelsius = (fahrenheit) => {
     return ((fahrenheit - 32) * 5) / 9
+  }
+
+  // Check if data is defined and has the expected structure
+  if (!data || !data.main || !data.weather || data.weather.length === 0) {
+    return null // Return early if data is incomplete or undefined
   }
 
   return (

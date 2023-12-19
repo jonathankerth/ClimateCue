@@ -51,7 +51,7 @@ export default function Home(setGlobalCity) {
   }
 
   const fetchFavoriteCities = useCallback(async () => {
-    if (currentUser && favoriteCities.length > 0) {
+    if (!auth.currentUser || favoriteCities.length > 0) {
       return
     }
 
@@ -176,20 +176,19 @@ export default function Home(setGlobalCity) {
       const { lat, lon, country, state } = geocodingResponse.data[0]
 
       // Fetch current weather
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const weatherResponse = await axios.get(weatherUrl)
-      setWeather({
-        ...weatherResponse.data,
-        country,
-        state,
-      })
-      setCurrentCityCoords({ lat, lon })
-      setRandomCityKey((prevKey) => prevKey + 1)
-      setWeatherMapKey((prevKey) => prevKey + 1)
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const currentWeatherResponse = await axios.get(currentWeatherUrl)
 
       // Fetch 5-day forecast
       const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       const forecastResponse = await axios.get(forecastUrl)
+
+      // Update state with current weather and forecast data
+      setWeather({
+        ...currentWeatherResponse.data,
+        country,
+        state,
+      })
       if (forecastResponse.data && forecastResponse.data.list) {
         const dailyData = forecastResponse.data.list.filter(
           (forecast) => new Date(forecast.dt * 1000).getUTCHours() === 12
