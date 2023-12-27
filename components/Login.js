@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from "react"
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 
 const Login = ({ setAuthMode }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [error, setError] = useState(null)
   const auth = getAuth()
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      // redirect logic
     } catch (error) {
       setError(error.message)
     }
@@ -41,9 +40,9 @@ const Login = ({ setAuthMode }) => {
       </button>
       {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
       <p className="text-center text-sm mt-2 text-gray-600">
-        Don&apos;t have an account?{' '}
+        Don&apos;t have an account?{" "}
         <button
-          onClick={() => setAuthMode('signup')}
+          onClick={() => setAuthMode("signup")}
           className="text-gray-800 hover:underline"
         >
           Sign Up

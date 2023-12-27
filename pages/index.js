@@ -62,7 +62,7 @@ export default function Home(setGlobalCity) {
     try {
       const q = query(
         collection(db, "favoriteCities"),
-        where("userId", "==", auth.currentUser.uid) // Filter by the logged-in user's ID
+        where("userId", "==", auth.currentUser.uid)
       )
 
       const querySnapshot = await getDocs(q)
@@ -87,7 +87,6 @@ export default function Home(setGlobalCity) {
       if (user) {
         setCurrentUser(user)
 
-        // Fetch subscription status and favorite cities
         const userRef = doc(db, "users", user.uid)
         const userDoc = await getDoc(userRef)
         setIsUserSubscribed(
@@ -106,7 +105,6 @@ export default function Home(setGlobalCity) {
           setCity(cities[0])
           fetchWeather(cities[0])
         } else {
-          // If user has no favorite cities, fetch random weather
           fetchRandomWeather()
         }
       } else {
@@ -124,7 +122,7 @@ export default function Home(setGlobalCity) {
   }, [auth])
 
   const handleSubmit = (e) => {
-    e.preventDefault() // Prevent form from submitting and causing a page refresh
+    e.preventDefault()
     fetchWeather()
   }
 
@@ -176,15 +174,12 @@ export default function Home(setGlobalCity) {
 
       const { lat, lon, country, state } = geocodingResponse.data[0]
 
-      // Fetch current weather
       const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       const currentWeatherResponse = await axios.get(currentWeatherUrl)
 
-      // Fetch 5-day forecast
       const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       const forecastResponse = await axios.get(forecastUrl)
 
-      // Update state with current weather and forecast data
       setWeather({
         ...currentWeatherResponse.data,
         country,
@@ -199,7 +194,6 @@ export default function Home(setGlobalCity) {
         setForecast([])
       }
 
-      // Update currentCityCoords
       setCurrentCityCoords({ lat, lon })
 
       setError(null)
@@ -229,7 +223,6 @@ export default function Home(setGlobalCity) {
       const geocodingResponse = await axios.get(geocodingUrl)
       const { lat, lon, country, state } = geocodingResponse.data[0]
 
-      // Fetch current weather
       const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       const weatherResponse = await axios.get(weatherUrl)
       setWeather({
@@ -238,7 +231,6 @@ export default function Home(setGlobalCity) {
         state,
       })
 
-      // Fetch 5-day forecast
       const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
       const forecastResponse = await axios.get(forecastUrl)
       if (forecastResponse.data && forecastResponse.data.list) {
@@ -252,11 +244,9 @@ export default function Home(setGlobalCity) {
 
       setError(null)
 
-      // Update currentCityCoords
       setCurrentCityCoords({ lat, lon })
       setWeatherMapKey((prevKey) => prevKey + 1)
 
-      // Increment randomCityKey to force WeatherMap to update
       setRandomCityKey((prevKey) => prevKey + 1)
     } catch (error) {
       setError(error.message)
@@ -319,7 +309,7 @@ export default function Home(setGlobalCity) {
                   className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
                   type="text"
                   placeholder="Search city"
-                  aria-label="Search for a city" // Accessibility improvement
+                  aria-label="Search for a city"
                 />
                 <button
                   type="submit"

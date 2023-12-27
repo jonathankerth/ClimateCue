@@ -22,7 +22,7 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {forecast.map((day) => (
           <div
-            key={day.dt} // Assuming day.dt is a unique timestamp
+            key={day.dt}
             className="flex flex-col items-center p-4 bg-white/30 rounded-lg shadow-lg transform transition duration-500 hover:scale-105"
           >
             <p className="font-medium text-lg">

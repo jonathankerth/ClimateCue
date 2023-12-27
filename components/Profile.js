@@ -37,8 +37,7 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
         const userRef = doc(db, "users", user.uid)
         const userDoc = await getDoc(userRef)
         if (userDoc.exists()) {
-          setFirstName(userDoc.data().firstName) // Set the first name
-          // ... other user data handling
+          setFirstName(userDoc.data().firstName)
         }
       }
     }
@@ -139,7 +138,6 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   }
 
   const handleDeleteAccount = () => {
-    // Show a confirmation dialog
     if (
       window.confirm(
         "Are you sure you want to delete your account? This action cannot be undone."
@@ -148,7 +146,6 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
       deleteUser(auth.currentUser)
         .then(() => {
           console.log("User deleted!")
-          // Additional logic after successful deletion, if needed
         })
         .catch((error) => {
           console.error("Error deleting user:", error)

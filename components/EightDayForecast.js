@@ -24,12 +24,10 @@ const EightDayForecast = ({ city, isCelsius }) => {
 
         const { lat, lon } = geocodingResponse.data[0]
 
-        // Fetch 8-day forecast using Open Weather 3.0 API
         const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly,current,alerts&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
         const forecastResponse = await axios.get(forecastUrl)
 
         if (forecastResponse.data && forecastResponse.data.daily) {
-          // Extract the first 8 days from the response
           setForecast(forecastResponse.data.daily.slice(0, 8))
         } else {
           setForecast([])

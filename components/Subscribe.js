@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase"
 const Subscribe = () => {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const stripePortalUrl =
-    "https://billing.stripe.com/p/login/4gwdU061kcv4cZq144" // Your Stripe portal URL
+    "https://billing.stripe.com/p/login/4gwdU061kcv4cZq144"
 
   useEffect(() => {
     const checkSubscriptionStatus = async () => {
@@ -27,13 +27,11 @@ const Subscribe = () => {
   }, [])
 
   useEffect(() => {
-    // Load Stripe script
     const script = document.createElement("script")
     script.src = "https://js.stripe.com/v3/buy-button.js"
     script.async = true
     document.body.appendChild(script)
 
-    // Check subscription status
     const urlParams = new URLSearchParams(window.location.search)
     const status = urlParams.get("status")
     if (status === "success") {
@@ -41,13 +39,11 @@ const Subscribe = () => {
     }
 
     return () => {
-      // Remove script when component unmounts
       document.body.removeChild(script)
     }
   }, [])
 
   const handleManageSubscription = () => {
-    // Redirect to Stripe customer portal
     window.location.href = stripePortalUrl
   }
 
@@ -55,7 +51,6 @@ const Subscribe = () => {
   const user = auth.currentUser
 
   if (user) {
-    // Use user.uid to set the firebaseUID in metadata
     const metadata = { firebaseUID: user.uid, userEmail: user.email }
   }
 

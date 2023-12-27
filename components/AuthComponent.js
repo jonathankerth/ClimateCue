@@ -13,11 +13,9 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in
         setCurrentUser(user)
         setAuthMode(null)
       } else {
-        // User is signed out
         setCurrentUser(null)
       }
     })
@@ -25,7 +23,6 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
     return () => unsubscribe()
   }, [auth])
 
-  // Function to handle click outside of the component
   const handleClickOutside = (event) => {
     if (containerRef.current && !containerRef.current.contains(event.target)) {
       setAuthMode(null)

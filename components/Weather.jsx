@@ -9,9 +9,8 @@ const Weather = ({ data, isCelsius }) => {
     return ((fahrenheit - 32) * 5) / 9
   }
 
-  // Check if data is defined and has the expected structure
   if (!data || !data.main || !data.weather || data.weather.length === 0) {
-    return null // Return early if data is incomplete or undefined
+    return null
   }
 
   return (
