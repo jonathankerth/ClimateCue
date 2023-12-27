@@ -6,11 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons"
 
 const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
-  // Remove forceUpdate prop
   const [map, setMap] = useState(null)
-  const [layer, setLayer] = useState("temp_new") // Default layer: Temp
+  const [layer, setLayer] = useState("temp_new")
+  const [marker, setMarker] = useState(null)
   const createCustomIcon = () => {
-    // SVG string
     const svgString = `
             <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
                 <path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/>
@@ -23,12 +22,10 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 
   const customIcon = L.divIcon({
     html: createCustomIcon().outerHTML,
-    className: "", // Important to avoid Leaflet's default icon styles
-    iconSize: L.point(30, 30), // You can adjust the size as needed
-    popupAnchor: [0, -15], // Adjust the anchor point as needed
+    className: "",
+    iconSize: L.point(30, 30),
+    popupAnchor: [0, -15],
   })
-
-  // Define the legends for each layer
 
   const legends = {
     precipitation_new: {
@@ -108,7 +105,6 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
         { color: "rgba(13,17,38,1)", value: "200 m/s" },
       ],
     },
-    // Add other layers if needed
   }
 
   const renderLegend = () => {
@@ -154,22 +150,17 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
     )
   }
 
-  // Convert lat and lon to numbers and check if they are valid
   const latitude = Number(lat)
   const longitude = Number(lon)
   const isValidLocation = !isNaN(latitude) && !isNaN(longitude)
-  const [marker, setMarker] = useState(null)
-
   useEffect(() => {
     if (isValidLocation && !map) {
       const mapContainer = L.map("map", {
-        zoomControl: false, // Hide default zoom control
+        zoomControl: false,
       }).setView([latitude, longitude], 8)
 
-      // Add custom zoom control
       L.control.zoom({ position: "topright" }).addTo(mapContainer)
 
-      // Customize the map style
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
         {
@@ -198,7 +189,6 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   useEffect(() => {
     if (map) {
       const weatherLayerURL = `https://tile.openweathermap.org/map/${layer}/{z}/{x}/{y}.png?appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      console.log("Weather Layer URL:", weatherLayerURL) // Log the URL for debugging
 
       const weatherLayer = L.tileLayer(weatherLayerURL, {
         maxZoom: 30,
@@ -222,24 +212,37 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   }
 
   return (
-    <div className="text-center my-4">
-      <select value={layer} onChange={(e) => setLayer(e.target.value)}>
-        <option value="clouds_new">Clouds</option>
-        <option value="precipitation_new">Precipitation</option>
-        <option value="pressure_new">Sea Level Pressure</option>
-        <option value="wind_new">Wind Speed</option>
-        <option value="temp_new">Temperature</option>
-      </select>
+    <div className="flex flex-col items-center my-4">
+      <div className="mb-4 relative">
+        <select
+          className="bg-white border border-gray-300 rounded-md text-gray-700 h-10 pl-5 pr-8 hover:border-gray-400 focus:outline-none appearance-none w-full"
+          value={layer}
+          onChange={(e) => setLayer(e.target.value)}
+        >
+          <option value="clouds_new">Clouds</option>
+          <option value="precipitation_new">Precipitation</option>
+          <option value="pressure_new">Sea Level Pressure</option>
+          <option value="wind_new">Wind Speed</option>
+          <option value="temp_new">Temperature</option>
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg
+            className="fill-current h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+          >
+            <path d="M5.59 7l4.58 4.59L14.82 7H5.59z" />
+          </svg>
+        </div>
+      </div>
       <div
         id="map"
-        style={{
-          height: "400px",
-          width: "100%",
-          borderRadius: "8px",
-          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
+        className="w-full md:max-w-4xl h-64 md:h-96 rounded-lg shadow-md"
+        style={{ background: "#e2e8f0" }}
       />
-      <div className="legend">{renderLegend()}</div>
+      <div className="mt-4 w-full md:max-w-4xl bg-white p-4 rounded-lg shadow-md">
+        {renderLegend()}
+      </div>
     </div>
   )
 }
