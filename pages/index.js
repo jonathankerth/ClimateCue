@@ -21,6 +21,7 @@ import FiveDayForecast from "@/components/FiveDayForecast"
 import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
 import EightDayForecast from "@/components/EightDayForecast"
+import ScrollToTop from "@/components/ScrollToTop"
 
 const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
@@ -422,6 +423,7 @@ export default function Home(setGlobalCity) {
                 key={weatherMapKey}
               />
             </div>
+            <ScrollToTop />
           </div>
         </div>
       </div>
