@@ -20,6 +20,7 @@ import {
   getDoc,
 } from "firebase/firestore"
 import Subscribe from "./Subscribe"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
 const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const auth = getAuth()
@@ -157,6 +158,17 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const toggleAccountSettings = () => {
     setShowAccountSettings(!showAccountSettings)
   }
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return
+
+    const updatedCities = [...favoriteCities]
+    const [removed] = updatedCities.splice(result.source.index, 1)
+    updatedCities.splice(result.destination.index, 0, removed)
+
+    setFavoriteCities(updatedCities)
+  }
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
       {/* User Greeting */}
@@ -169,29 +181,42 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
         </div>
       )}
       {/* Favorite Cities List */}
-      <div className="my-4 p-4 bg-gray-50 rounded-lg shadow">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-          Your Favorite Cities
-        </h2>
-        {favoriteCities.map((city, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center bg-white p-2 rounded mb-2 hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
-            onClick={() => onCitySelect(city)}
-          >
-            <p className="text-md font-medium text-gray-800">{city}</p>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                removeFavoriteCity(city)
-              }}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition duration-300"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided) => (
+            <ul {...provided.droppableProps} ref={provided.innerRef}>
+              {favoriteCities.map((city, index) => (
+                <Draggable key={city} draggableId={city} index={index}>
+                  {(provided) => (
+                    <li
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="my-2"
+                    >
+                      <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
+                        <p className="text-md font-medium text-gray-800">
+                          {city}
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            removeFavoriteCity(city)
+                          }}
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition duration-300"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </li>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* Toggle Account Settings Button */}
       <button
