@@ -30,6 +30,7 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [notification, setNotification] = useState("")
   const [firstName, setFirstName] = useState("")
+  const [currentEmail, setCurrentEmail] = useState("")
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -213,10 +214,17 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
           <div className="mt-3">
             <input
               type="email"
+              placeholder="Current Email"
+              value={currentEmail}
+              onChange={(e) => setCurrentEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+            <input
+              type="email"
               placeholder="New Email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               onClick={handleEmailChange}
