@@ -10,28 +10,19 @@ import {
   reauthenticateWithCredential,
 } from "firebase/auth"
 import { db } from "@/lib/firebase"
-import {
-  collection,
-  query,
-  where,
-  deleteDoc,
-  getDocs,
-  doc,
-  getDoc,
-} from "firebase/firestore"
+import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
-const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
+const Profile = ({ user }) => {
   const auth = getAuth()
-  const [favoriteCities, setFavoriteCities] = useState(userFavoriteCities || [])
+  const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [showAccountSettings, setShowAccountSettings] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("")
   const [notification, setNotification] = useState("")
   const [firstName, setFirstName] = useState("")
-  const [currentEmail, setCurrentEmail] = useState("")
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -40,6 +31,7 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
         const userDoc = await getDoc(userRef)
         if (userDoc.exists()) {
           setFirstName(userDoc.data().firstName)
+          setFavoriteCities(userDoc.data().favoriteCities || [])
         }
       }
     }
@@ -47,37 +39,15 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
     fetchUserData()
   }, [user])
 
-  const fetchFavoriteCities = useCallback(async () => {
-    try {
-      const q = query(
-        collection(db, "favoriteCities"),
-        where("userId", "==", user.uid)
-      )
-      const querySnapshot = await getDocs(q)
-      const cities = querySnapshot.docs.map((doc) => doc.data().city)
-      setFavoriteCities(cities)
-    } catch (error) {
-      console.error("Error fetching favorite cities:", error)
-      setFavoriteCities([])
-    }
-  }, [user.uid])
-
-  useEffect(() => {
-    setFavoriteCities(userFavoriteCities)
-  }, [userFavoriteCities])
-
   const removeFavoriteCity = async (cityName) => {
     try {
-      const q = query(
-        collection(db, "favoriteCities"),
-        where("userId", "==", auth.currentUser.uid),
-        where("city", "==", cityName)
-      )
-      const querySnapshot = await getDocs(q)
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref)
+      const userRef = doc(db, "users", user.uid)
+      await userRef.update({
+        favoriteCities: favoriteCities.filter((city) => city !== cityName),
       })
-      fetchFavoriteCities()
+      setFavoriteCities((prevCities) =>
+        prevCities.filter((city) => city !== cityName)
+      )
     } catch (error) {
       console.error("Error removing favorite city:", error)
     }
@@ -159,14 +129,20 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
     setShowAccountSettings(!showAccountSettings)
   }
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = async (result) => {
     if (!result.destination) return
 
     const updatedCities = [...favoriteCities]
     const [removed] = updatedCities.splice(result.source.index, 1)
     updatedCities.splice(result.destination.index, 0, removed)
 
-    setFavoriteCities(updatedCities)
+    const userRef = doc(db, "users", user.uid)
+    try {
+      await updateDoc(userRef, { favoriteCities: updatedCities })
+      setFavoriteCities(updatedCities)
+    } catch (error) {
+      console.error("Error updating favorite cities:", error)
+    }
   }
 
   return (
@@ -237,13 +213,6 @@ const Profile = ({ user, userFavoriteCities, onCitySelect }) => {
           </div>
           {/* Email Update Form */}
           <div className="mt-3">
-            <input
-              type="email"
-              placeholder="Current Email"
-              value={currentEmail}
-              onChange={(e) => setCurrentEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            />
             <input
               type="email"
               placeholder="New Email"
