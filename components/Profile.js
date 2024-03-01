@@ -39,15 +39,18 @@ const Profile = ({ user }) => {
     fetchUserData()
   }, [user])
 
+  useEffect(() => {
+    setFavoriteCities(favoriteCities) // Assuming you have a state setter like this
+  }, [favoriteCities]) // Depend on favoriteCities prop
+
   const removeFavoriteCity = async (cityName) => {
+    const updatedCities = favoriteCities.filter((city) => city !== cityName)
     try {
       const userRef = doc(db, "users", user.uid)
-      await userRef.update({
-        favoriteCities: favoriteCities.filter((city) => city !== cityName),
+      await updateDoc(userRef, {
+        favoriteCities: updatedCities,
       })
-      setFavoriteCities((prevCities) =>
-        prevCities.filter((city) => city !== cityName)
-      )
+      setFavoriteCities(updatedCities)
     } catch (error) {
       console.error("Error removing favorite city:", error)
     }

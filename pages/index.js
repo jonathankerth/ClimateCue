@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react"
 import { db } from "@/lib/firebase"
 import {
   collection,
-  addDoc,
+  updateDoc,
   query,
   where,
   getDocs,
@@ -83,38 +83,33 @@ export default function Home(setGlobalCity) {
   const [initialLoad, setInitialLoad] = useState(true)
 
   useEffect(() => {
-    const auth = getAuth()
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user)
 
         const userRef = doc(db, "users", user.uid)
         const userDoc = await getDoc(userRef)
-        setIsUserSubscribed(
-          userDoc.exists() ? userDoc.data().isSubscribed : false
-        )
+        if (userDoc.exists()) {
+          setIsUserSubscribed(userDoc.data().isSubscribed)
 
-        const q = query(
-          collection(db, "favoriteCities"),
-          where("userId", "==", user.uid)
-        )
-        const querySnapshot = await getDocs(q)
-        const cities = querySnapshot.docs.map((doc) => doc.data().city)
-        setFavoriteCities(cities)
+          const cities = userDoc.data().favoriteCities || []
+          setFavoriteCities(cities)
 
-        if (cities.length > 0) {
-          setCity(cities[0])
-          fetchWeather(cities[0])
+          if (cities.length > 0) {
+            setCity(cities[0])
+            fetchWeather(cities[0])
+          } else {
+            fetchRandomWeather()
+          }
         } else {
+          console.log("User document does not exist")
           fetchRandomWeather()
         }
       } else {
         setCurrentUser(null)
         setIsUserSubscribed(false)
         setFavoriteCities([])
-        if (initialLoad) {
-          fetchRandomWeather()
-        }
+        fetchRandomWeather()
       }
       setInitialLoad(false)
     })
@@ -143,20 +138,29 @@ export default function Home(setGlobalCity) {
     }
 
     try {
-      await addDoc(citiesCollectionRef, {
-        userId: auth.currentUser.uid,
-        city: cityName.trim(),
-      })
-      console.log(`${cityName} added to favorites`)
+      const userRef = doc(db, "users", auth.currentUser.uid)
+      const userDoc = await getDoc(userRef)
+      if (userDoc.exists()) {
+        const userData = userDoc.data()
+        const updatedFavoriteCities = userData.favoriteCities
+          ? [...userData.favoriteCities, cityName.trim()]
+          : [cityName.trim()]
 
-      setFavoriteCities((prevCities) => [...prevCities, cityName.trim()])
+        await updateDoc(userRef, {
+          favoriteCities: updatedFavoriteCities,
+        })
 
-      setShowNotification(true)
-
-      setTimeout(() => setShowNotification(false), 3000)
+        console.log(`${cityName} added to favorites`)
+        setFavoriteCities(updatedFavoriteCities)
+        setShowNotification(true)
+        setTimeout(() => setShowNotification(false), 3000)
+      } else {
+        console.error("User document does not exist")
+      }
     } catch (error) {
       console.error("Error adding favorite city:", error)
     }
+    setFavoriteCities([...favoriteCities, cityName.trim()])
   }
 
   const fetchWeather = async (cityName = city) => {

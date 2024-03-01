@@ -44,8 +44,9 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
     <div className="flex flex-col mt-4" ref={containerRef}>
       {currentUser ? (
         <Profile
+          key={favoriteCities.length}
           user={currentUser}
-          userFavoriteCities={favoriteCities}
+          favoriteCities={favoriteCities}
           onCitySelect={setCityFromProfile}
         />
       ) : (
