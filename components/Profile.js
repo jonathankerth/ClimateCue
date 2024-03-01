@@ -14,7 +14,7 @@ import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
-const Profile = ({ user }) => {
+const Profile = ({ user, fetchWeather }) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
@@ -173,13 +173,18 @@ const Profile = ({ user }) => {
                       {...provided.dragHandleProps}
                       className="my-2"
                     >
-                      <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
+                      <div
+                        className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
+                        onClick={() => fetchWeather(city)}
+                      >
+                        {" "}
+                        {/* Add onClick handler */}
                         <p className="text-md font-medium text-gray-800">
                           {city}
                         </p>
                         <button
                           onClick={(e) => {
-                            e.stopPropagation()
+                            e.stopPropagation() // Prevent the click from bubbling to the city click handler
                             removeFavoriteCity(city)
                           }}
                           className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition duration-300"
@@ -191,6 +196,7 @@ const Profile = ({ user }) => {
                   )}
                 </Draggable>
               ))}
+
               {provided.placeholder}
             </ul>
           )}

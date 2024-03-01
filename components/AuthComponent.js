@@ -4,7 +4,11 @@ import Login from "./Login"
 import Signup from "./Signup"
 import Profile from "./Profile"
 
-const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
+const AuthComponent = ({
+  favoriteCities,
+  setCityFromProfile,
+  fetchWeather,
+}) => {
   const [authMode, setAuthMode] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const containerRef = useRef(null)
@@ -44,10 +48,10 @@ const AuthComponent = ({ favoriteCities, setCityFromProfile }) => {
     <div className="flex flex-col mt-4" ref={containerRef}>
       {currentUser ? (
         <Profile
-          key={favoriteCities.length}
           user={currentUser}
           favoriteCities={favoriteCities}
           onCitySelect={setCityFromProfile}
+          fetchWeather={fetchWeather}
         />
       ) : (
         <>

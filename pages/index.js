@@ -298,6 +298,7 @@ export default function Home(setGlobalCity) {
           <AuthComponent
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}
+            fetchWeather={fetchWeather}
           />
         </div>
         <div className="flex flex-col w-full z-10">
