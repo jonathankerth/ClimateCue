@@ -151,7 +151,7 @@ export default function Home(setGlobalCity) {
         })
 
         console.log(`${cityName} added to favorites`)
-        setFavoriteCities(updatedFavoriteCities) // Remove this line
+        setFavoriteCities(updatedFavoriteCities)
         setShowNotification(true)
         setTimeout(() => setShowNotification(false), 3000)
       } else {
