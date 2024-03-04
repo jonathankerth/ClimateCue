@@ -76,7 +76,7 @@ export default function Home(setGlobalCity) {
   }, [auth.currentUser])
   useEffect(() => {
     fetchFavoriteCities()
-  }, [fetchFavoriteCities])
+  }, [])
 
   const [currentUser, setCurrentUser] = useState(null)
 
@@ -355,7 +355,6 @@ export default function Home(setGlobalCity) {
               </div>
             )}
 
-            {/* City Name Display */}
             {weather.name && (
               <div className="text-center my-4">
                 <h2 className="text-2xl text-white font-bold">
@@ -363,9 +362,10 @@ export default function Home(setGlobalCity) {
                   {weather.state && `, ${weather.state}`}
                   {weather.sys?.country && `, ${weather.sys.country}`}
                 </h2>
-                {auth.currentUser && (
+
+                {auth.currentUser && !favoriteCities.includes(weather.name) && (
                   <button
-                    onClick={() => saveFavoriteCity(weather.name)} // Pass the current city name here
+                    onClick={() => saveFavoriteCity(weather.name)}
                     className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                   >
                     Add to Favorites
