@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   getAuth,
   signOut,
@@ -14,7 +14,7 @@ import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
-const Profile = ({ user, fetchWeather }) => {
+const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
@@ -40,8 +40,8 @@ const Profile = ({ user, fetchWeather }) => {
   }, [user])
 
   useEffect(() => {
-    setFavoriteCities(favoriteCities) // Assuming you have a state setter like this
-  }, [favoriteCities]) // Depend on favoriteCities prop
+    setFavoriteCities(favoriteCitiesProp)
+  }, [favoriteCitiesProp])
 
   const removeFavoriteCity = async (cityName) => {
     const updatedCities = favoriteCities.filter((city) => city !== cityName)
@@ -184,7 +184,7 @@ const Profile = ({ user, fetchWeather }) => {
                         </p>
                         <button
                           onClick={(e) => {
-                            e.stopPropagation() // Prevent the click from bubbling to the city click handler
+                            e.stopPropagation()
                             removeFavoriteCity(city)
                           }}
                           className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded transition duration-300"

@@ -151,7 +151,7 @@ export default function Home(setGlobalCity) {
         })
 
         console.log(`${cityName} added to favorites`)
-        setFavoriteCities(updatedFavoriteCities)
+        setFavoriteCities(updatedFavoriteCities) // Remove this line
         setShowNotification(true)
         setTimeout(() => setShowNotification(false), 3000)
       } else {
@@ -160,7 +160,6 @@ export default function Home(setGlobalCity) {
     } catch (error) {
       console.error("Error adding favorite city:", error)
     }
-    setFavoriteCities([...favoriteCities, cityName.trim()])
   }
 
   const fetchWeather = async (cityName = city) => {
@@ -299,6 +298,7 @@ export default function Home(setGlobalCity) {
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}
             fetchWeather={fetchWeather}
+            setFavoriteCities={setFavoriteCities}
           />
         </div>
         <div className="flex flex-col w-full z-10">
