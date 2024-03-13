@@ -1,77 +1,63 @@
-const express = require("express")
-const router = express.Router()
-const bodyParser = require("body-parser")
-const stripe = require("../utils/stripe")
+const { buffer } = require("micro")
+const admin = require("firebase-admin")
+const Stripe = require("stripe")
 const functions = require("firebase-functions")
 
-router.use(bodyParser.raw({ type: "application/json" }))
-const admin = require("firebase-admin")
+if (!admin.apps.length) {
+  const firebaseConfig = functions.config().firebase
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: firebaseConfig.project_id,
+      clientEmail: firebaseConfig.client_email,
+      privateKey: firebaseConfig.private_key.replace(/\\n/g, "\n"),
+    }),
+  })
+}
 
-router.post("/", async (req, res) => {
-  const signature = req.headers["stripe-signature"]
-  const webhookSecret = functions.config().stripe.webhooksecret
+const stripeConfig = functions.config().stripe
+const stripe = new Stripe(stripeConfig.secret_key)
 
-  if (!webhookSecret) {
-    console.error("The webhook secret is undefined.")
-    return res
-      .status(400)
-      .send("Configuration error: Webhook secret is undefined")
-  }
-
+const webhookHandler = async (req, res) => {
+  const sig = req.headers["stripe-signature"]
   let event
+
+  const buf = await buffer(req)
   try {
     event = stripe.webhooks.constructEvent(
-      req.rawBody,
-      signature,
-      webhookSecret
+      buf,
+      sig,
+      stripeConfig.webhook_secret
     )
-  } catch (error) {
-    console.error(`Error in webhook signature verification: ${error.message}`)
-    return res.status(400).send(`Webhook Error: ${error.message}`)
+  } catch (err) {
+    console.error("Webhook signature verification failed", err.message)
+    return res.status(400).send(`Webhook Error: ${err.message}`)
   }
 
-  try {
-    const usersRef = admin.firestore().collection("users")
+  switch (event.type) {
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted": {
+      const subscription = event.data.object
+      const userId = subscription.metadata.firebaseUID
 
-    switch (event.type) {
-      case "customer.subscription.created":
-      case "customer.subscription.updated":
-      case "customer.subscription.deleted": {
-        const subscription = event.data.object
-        const userId = subscription.metadata.firebaseUID
-
-        if (!userId) {
-          console.error("Firebase UID not found in subscription metadata")
-          return res.status(400).send("No action taken: Firebase UID not found")
-        }
-
-        const userRef = usersRef.doc(userId)
-        const doc = await userRef.get()
-
-        if (!doc.exists) {
-          console.error(`No document found for user ID: ${userId}`)
-          return res
-            .status(404)
-            .send(`No Firestore document found for user ID: ${userId}`)
-        }
-
-        const isSubscribed = event.type !== "customer.subscription.deleted"
-        await userRef.update({ isSubscribed: isSubscribed })
-
-        res
-          .status(200)
-          .send(`Handled subscription event ${event.type} for user ${userId}`)
-        break
+      if (!userId) {
+        console.error("Firebase UID not found in subscription metadata.")
+        return res.status(400).send("Firebase UID not found.")
       }
 
-      default:
-        console.log(`Unhandled event type ${event.type}`)
+      const userRef = admin.firestore().collection("users").doc(userId)
+      const isSubscribed = event.type !== "customer.subscription.deleted"
+      await userRef.update({ isSubscribed })
+      console.log(
+        `Subscription status updated for user ${userId}: ${isSubscribed}`
+      )
+      break
     }
-    res.status(200).send(`Handled event type ${event.type}`)
-  } catch (error) {
-    console.error(`Error processing event: ${error.message}`)
-    res.status(500).send(`Internal Server Error: ${error.message}`)
+    default:
+      console.log(`Unhandled event type ${event.type}`)
   }
-})
 
-module.exports = router
+  res.json({ received: true })
+}
+
+module.exports = webhookHandler
