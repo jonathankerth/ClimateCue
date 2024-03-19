@@ -14,7 +14,10 @@ const Weather = ({ data, isCelsius }) => {
   }
 
   return (
-    <div className="relative flex flex-col max-w-[500px] w-full m-auto p-4 text-gray-300 z-10 bg-black/50 backdrop-blur-md rounded-lg shadow-lg">
+    <div
+      id="weather-data"
+      className="relative flex flex-col max-w-[500px] w-full m-auto p-4 text-gray-300 z-10 bg-black/50 backdrop-blur-md rounded-lg shadow-lg"
+    >
       {/* Current Weather */}
       <div className="flex flex-col items-center text-center">
         <Image

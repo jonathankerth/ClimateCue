@@ -46,7 +46,7 @@ const AuthComponent = ({
   }
 
   return (
-    <div className="flex flex-col mt-4" ref={containerRef}>
+    <div className="flex flex-col mt-4 " ref={containerRef}>
       {currentUser ? (
         <Profile
           user={currentUser}

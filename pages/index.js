@@ -22,6 +22,7 @@ import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
 import EightDayForecast from "@/components/EightDayForecast"
 import ScrollToTop from "@/components/ScrollToTop"
+import Navbar from "@/components/NavBar"
 
 const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
@@ -270,16 +271,7 @@ export default function Home(setGlobalCity) {
   }
 
   return (
-    <div
-      className="relative flex flex-col min-h-screen w-full"
-      style={{
-        backgroundImage:
-          'url("https://images.unsplash.com/photo-1580193769210-b8d1c049a7d9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <div className="relative flex flex-col min-h-screen w-full">
       <Head>
         <title>Climate Cue</title>
         <meta
@@ -289,11 +281,17 @@ export default function Home(setGlobalCity) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="absolute top-0 left-0 right-0 bottom-0 bg-black/40 z-0" />
+      <div
+        id="top"
+        className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 z-0"
+      />
 
       <div className="relative z-10 flex flex-col w-full">
+        <div className="relative z-20 flex flex-col w-full">
+          <Navbar isUserSubscribed={isUserSubscribed} />
+        </div>
         {/* AuthComponent with responsive positioning */}
-        <div className="md:absolute md:top-4 md:right-4 z-20">
+        <div className="md:absolute md:top-4 md:right-4 z-15 mt-10">
           <AuthComponent
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}

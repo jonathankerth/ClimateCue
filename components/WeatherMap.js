@@ -212,7 +212,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
 
   return (
     <div className="flex flex-col items-center my-4">
-      <div className="mb-4 relative">
+      <div id="eight-day-forecast" className="mb-4 relative">
         <select
           className="bg-white border border-gray-300 rounded-md text-gray-700 h-10 pl-5 pr-8 hover:border-gray-400 focus:outline-none appearance-none w-full"
           value={layer}
