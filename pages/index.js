@@ -28,7 +28,7 @@ const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
 })
 
-export default function Home(setGlobalCity) {
+export default function Home(setGlobalCity, handleCityClick) {
   const [isCelsius, setIsCelsius] = useState(false)
   const [city, setCity] = useState("")
   const [weather, setWeather] = useState({})
@@ -291,12 +291,14 @@ export default function Home(setGlobalCity) {
           <Navbar isUserSubscribed={isUserSubscribed} />
         </div>
         {/* AuthComponent with responsive positioning */}
-        <div className="md:absolute md:top-4 md:right-4 z-15 mt-10">
+        <div className="md:absolute md:top-4 md:right-4 z-30 mt-10">
           <AuthComponent
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}
             fetchWeather={fetchWeather}
             setFavoriteCities={setFavoriteCities}
+            handleCityClick={handleCityClick}
+            setCity={setCity}
           />
         </div>
         <div className="flex flex-col w-full z-10">

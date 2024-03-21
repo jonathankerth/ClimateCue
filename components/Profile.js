@@ -14,7 +14,7 @@ import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
-const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
+const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
@@ -54,6 +54,10 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
     } catch (error) {
       console.error("Error removing favorite city:", error)
     }
+  }
+  const handleCityClick = (city) => {
+    setCity(city) // Update the city state with the clicked city
+    fetchWeather(city) // Trigger weather search for the clicked city
   }
 
   const handleLogout = () => {
@@ -168,17 +172,15 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
                 <Draggable key={city} draggableId={city} index={index}>
                   {(provided) => (
                     <li
-                      ref={provided.innerRef}
                       {...provided.draggableProps}
-                      {...provided.dragHandleProps}
+                      ref={provided.innerRef}
                       className="my-2"
+                      onClick={() => handleCityClick(city)} // Call handleCityClick with the city name
                     >
-                      <div
-                        className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
-                        onClick={() => fetchWeather(city)}
-                      >
-                        {" "}
-                        {/* Add onClick handler */}
+                      <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
+                        {/* Draggable handle */}
+                        <div {...provided.dragHandleProps}>☰</div>
+                        {/* End of draggable handle */}
                         <p className="text-md font-medium text-gray-800">
                           {city}
                         </p>
@@ -196,13 +198,11 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
                   )}
                 </Draggable>
               ))}
-
               {provided.placeholder}
             </ul>
           )}
         </Droppable>
       </DragDropContext>
-
       {/* Toggle Account Settings Button */}
       <button
         onClick={toggleAccountSettings}
@@ -210,7 +210,7 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
       >
         {showAccountSettings ? "Hide Account Settings" : "Account Settings"}
       </button>
-      {/* Account Settings */}
+      {/* Account Settings Button */}
       {showAccountSettings && (
         <div
           className={`${
@@ -221,6 +221,7 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
             <Subscribe />
           </div>
           {/* Email Update Form */}
+          ...
           <div className="mt-3">
             <input
               type="email"
@@ -236,7 +237,6 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
               Update Email
             </button>
           </div>
-
           {/* Password Update Form */}
           <div className="mt-3">
             <input
@@ -260,7 +260,6 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp }) => {
               Update Password
             </button>
           </div>
-
           {/* Delete Account Button */}
           <button
             onClick={handleDeleteAccount}

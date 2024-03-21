@@ -9,6 +9,8 @@ const AuthComponent = ({
   setCityFromProfile,
   fetchWeather,
   setFavoriteCities,
+  handleCityClick,
+  setCity,
 }) => {
   const [authMode, setAuthMode] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
@@ -54,6 +56,8 @@ const AuthComponent = ({
           onCitySelect={setCityFromProfile}
           fetchWeather={fetchWeather}
           setFavoriteCities={setFavoriteCities}
+          handleCityClick={handleCityClick}
+          setCity={setCity}
         />
       ) : (
         <>
