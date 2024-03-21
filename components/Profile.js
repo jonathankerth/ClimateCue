@@ -55,9 +55,10 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
       console.error("Error removing favorite city:", error)
     }
   }
+
   const handleCityClick = (city) => {
-    setCity(city) // Update the city state with the clicked city
-    fetchWeather(city) // Trigger weather search for the clicked city
+    setCity(city)
+    fetchWeather(city)
   }
 
   const handleLogout = () => {
@@ -175,12 +176,11 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
                       {...provided.draggableProps}
                       ref={provided.innerRef}
                       className="my-2"
-                      onClick={() => handleCityClick(city)} // Call handleCityClick with the city name
+                      onClick={() => handleCityClick(city)}
                     >
                       <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
-                        {/* Draggable handle */}
                         <div {...provided.dragHandleProps}>☰</div>
-                        {/* End of draggable handle */}
+
                         <p className="text-md font-medium text-gray-800">
                           {city}
                         </p>
@@ -221,7 +221,6 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
             <Subscribe />
           </div>
           {/* Email Update Form */}
-          ...
           <div className="mt-3">
             <input
               type="email"

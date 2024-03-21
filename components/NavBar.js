@@ -43,7 +43,7 @@ const Navbar = ({ isUserSubscribed }) => {
               {/* Outfit Recommendation */}
               {isUserSubscribed && (
                 <Link
-                  to="outfit-recommendation"
+                  to="outfit-rec"
                   smooth={true}
                   duration={500}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"

@@ -36,10 +36,10 @@ const WeatherOutfitRecommendation = ({ weatherData }) => {
 
   return (
     <div className="relative flex flex-col max-w-[500px] w-full m-auto p-4 text-gray-300 z-10 bg-black/50 backdrop-blur-md rounded-lg shadow-lg">
-      <h3 id="outfit-recomendation" className="text-xl font-bold mb-2">
-        What to Wear?
-      </h3>
-      {isLoading ? <p>Loading recommendation...</p> : <p>{recommendation}</p>}
+      <di id="outfit-rec" v>
+        <h3 className="text-xl font-bold mb-2">What to Wear?</h3>
+        {isLoading ? <p>Loading recommendation...</p> : <p>{recommendation}</p>}
+      </di>
     </div>
   )
 }
