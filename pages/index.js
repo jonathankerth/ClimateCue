@@ -298,7 +298,6 @@ export default function Home(setGlobalCity, handleCityClick) {
             fetchWeather={fetchWeather}
             setFavoriteCities={setFavoriteCities}
             handleCityClick={handleCityClick}
-            setCity={setCity}
           />
         </div>
         <div className="flex flex-col w-full z-10">
