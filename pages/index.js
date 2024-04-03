@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { BsSearch } from "react-icons/bs"
 import Head from "next/head"
 import axios from "axios"
@@ -16,7 +15,6 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import dynamic from "next/dynamic"
 import Weather from "../components/Weather"
-import TemperatureSwitch from "../components/TemperatureSwitch"
 import FiveDayForecast from "@/components/FiveDayForecast"
 import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
@@ -28,8 +26,7 @@ const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
 })
 
-export default function Home(setGlobalCity, handleCityClick) {
-  const [isCelsius, setIsCelsius] = useState(false)
+export default function Home({ handleCityClick }) {
   const [city, setCity] = useState("")
   const [weather, setWeather] = useState({})
   const [forecast, setForecast] = useState([])
@@ -41,6 +38,7 @@ export default function Home(setGlobalCity, handleCityClick) {
     lat: 0,
     lon: 0,
   })
+  const [isCelsius, setIsCelsius] = useState(true)
   const auth = getAuth()
 
   const citiesCollectionRef = collection(db, "favoriteCities")
@@ -51,6 +49,14 @@ export default function Home(setGlobalCity, handleCityClick) {
   const setCityFromProfile = (cityName) => {
     setCity(cityName)
     fetchWeather(cityName)
+  }
+
+  const onToggle = () => {
+    setIsCelsius((prevIsCelsius) => !prevIsCelsius)
+  }
+
+  const toggleTemperatureUnit = () => {
+    setIsCelsius((prevIsCelsius) => !prevIsCelsius)
   }
 
   const fetchFavoriteCities = useCallback(async () => {
@@ -265,17 +271,12 @@ export default function Home(setGlobalCity, handleCityClick) {
       fetchRandomWeather()
     }
   }, [currentUser, initialLoad])
-
-  const toggleTemperatureUnit = () => {
-    setIsCelsius(!isCelsius)
-  }
-
   return (
-    <div className="relative flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full">
       <Head>
         <title>Climate Cue</title>
         <meta
-          name="Climate Cue"
+          name="description"
           content="Weather Website created by Jonathan Gallardo-Kerth"
         />
         <link rel="icon" href="/favicon.ico" />
@@ -283,151 +284,110 @@ export default function Home(setGlobalCity, handleCityClick) {
 
       <div
         id="top"
-        className="absolute top-0 left-0 right-0 bottom-0 bg-black/30 z-0"
+        className="absolute top-0 left-0 right-0 bottom-0 bg-gray-200 z-0"
       />
 
-      <div className="relative z-10 flex flex-col w-full">
-        <div className="relative z-20 flex flex-col w-full">
-          <Navbar isUserSubscribed={isUserSubscribed} />
-        </div>
-        {/* AuthComponent with responsive positioning */}
-        <div className="md:absolute md:top-4 md:right-4 z-30 mt-10">
+      <div className="relative z-10">
+        <Navbar isUserSubscribed={isUserSubscribed} className="z-100" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end w-full lg:absolute lg:top-0 lg:right-0 mt-16 lg:mt-16 lg:mr-8 z-20">
           <AuthComponent
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}
             fetchWeather={fetchWeather}
             setFavoriteCities={setFavoriteCities}
             handleCityClick={handleCityClick}
+            isCelsius={isCelsius}
+            onToggle={toggleTemperatureUnit}
+            setIsCelsius={setIsCelsius}
           />
         </div>
-        <div className="flex flex-col w-full z-10">
-          {/* Main Content Area */}
-          <div className="flex flex-col flex-1">
-            <div className="max-w-[400px] mx-auto my-8">
-              <form
-                onSubmit={handleSubmit}
-                className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
-              >
-                <input
-                  onChange={(e) => setCity(e.target.value)}
-                  value={city}
-                  className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
-                  type="text"
-                  placeholder="Search city"
-                  aria-label="Search for a city"
-                />
-                <button
-                  type="submit"
-                  className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-                >
-                  <BsSearch size={20} />
-                </button>
-                <button
-                  type="button"
-                  onClick={fetchRandomWeather}
-                  className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-                >
-                  Random City
-                </button>
-              </form>
 
-              {/* Error Message */}
-              {error && (
-                <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
-                  {error}
-                </div>
-              )}
+        <div className="flex flex-col items-center lg:flex-row lg:items-stretch lg:justify-center lg:mt-32">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-2 flex flex-col lg:flex-row items-stretch lg:items-center space-y-2 lg:space-x-2 lg:space-y-0"
+          >
+            .
+            <input
+              onChange={(e) => setCity(e.target.value)}
+              value={city}
+              className="flex-grow px-2 py-1 text-black focus:outline-none text-lg rounded-md lg:rounded-none"
+              type="text"
+              placeholder="Search city"
+              aria-label="Search for a city"
+            />
+            <button
+              type="submit"
+              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md lg:rounded-none"
+            >
+              <BsSearch size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={fetchRandomWeather}
+              className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md lg:rounded-none"
+            >
+              Random City
+            </button>
+          </form>
+        </div>
+
+        {error && (
+          <div className="bg-red-500 text-white px-4 rounded-md text-center">
+            {error}
+          </div>
+        )}
+
+        {showNotification && (
+          <div className="bg-green-500 text-white p-2 rounded text-center">
+            {weather.name} added to favorites!
+          </div>
+        )}
+
+        <div className="bg-gray-200 rounded-lg p-4 lg:mx-16">
+          <h2 className="text-2xl text-gray-800 font-bold text-center">
+            Weather in {weather.name}
+            {weather.state && `, ${weather.state}`}
+            {weather.sys?.country && `, ${weather.sys.country}`}
+          </h2>
+        </div>
+
+        <div className="flex flex-col items-center">
+          {Object.keys(weather).length !== 0 && (
+            <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
+          )}
+          {isUserSubscribed && Object.keys(weather).length !== 0 && (
+            <WeatherOutfitRecommendation weatherData={weather} />
+          )}
+          {!isUserSubscribed && forecast.length > 0 && (
+            <FiveDayForecast
+              city={city}
+              forecast={forecast}
+              isCelsius={isCelsius}
+            />
+          )}
+          {isUserSubscribed && forecast.length > 0 && (
+            <EightDayForecast
+              city={city}
+              forecast={forecast}
+              isCelsius={isCelsius}
+            />
+          )}
+          {loading && <div className="text-center text-white">Loading...</div>}
+          {error && (
+            <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
+              {error}
             </div>
-
-            {/* Temperature Switch */}
-            <div className="flex justify-center my-4">
-              <TemperatureSwitch
-                isCelsius={isCelsius}
-                onToggle={toggleTemperatureUnit}
-              />
-            </div>
-
-            {/* Notification */}
-            {showNotification && (
-              <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
-                {weather.name} added to favorites!
-              </div>
-            )}
-
-            {weather.name && (
-              <div className="text-center my-4">
-                <h2 className="text-2xl text-white font-bold">
-                  Weather in {weather.name}
-                  {weather.state && `, ${weather.state}`}
-                  {weather.sys?.country && `, ${weather.sys.country}`}
-                </h2>
-
-                {auth.currentUser && !favoriteCities.includes(weather.name) && (
-                  <button
-                    onClick={() => saveFavoriteCity(weather.name)}
-                    className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Add to Favorites
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Weather Data */}
-            <div className="flex flex-col items-center">
-              {Object.keys(weather).length !== 0 && (
-                <Weather data={weather} isCelsius={isCelsius} />
-              )}
-            </div>
-            {/* GPT Outfit Recommendation */}
-            {isUserSubscribed && Object.keys(weather).length !== 0 && (
-              <div className="flex flex-col items-center mt-4">
-                <WeatherOutfitRecommendation weatherData={weather} />
-              </div>
-            )}
-
-            {/* Five-Day Forecast */}
-            {!isUserSubscribed && forecast.length > 0 && (
-              <div className="p-4">
-                <FiveDayForecast
-                  city={city}
-                  forecast={forecast}
-                  isCelsius={isCelsius}
-                />
-              </div>
-            )}
-
-            {/* Eight-Day Forecast (for subscribed users) */}
-            {isUserSubscribed && forecast.length > 0 && (
-              <div className="p-4">
-                <EightDayForecast
-                  city={city}
-                  forecast={forecast}
-                  isCelsius={isCelsius}
-                />
-              </div>
-            )}
-
-            {/* Loading and Error Messages */}
-            {loading && (
-              <div className="text-center text-white">Loading...</div>
-            )}
-            {error && (
-              <div className="mt-2 bg-red-500 text-white py-2 px-4 rounded-md text-center">
-                {error}
-              </div>
-            )}
-
-            <div className="w-full max-w-[600px] mx-auto">
-              <WeatherMap
-                lat={currentCityCoords.lat}
-                lon={currentCityCoords.lon}
-                isCelsius={isCelsius}
-                cityName={weather.name}
-                key={weatherMapKey}
-              />
-            </div>
-            <ScrollToTop />
+          )}
+          <div className="w-full max-w-[600px] mx-auto">
+            <WeatherMap
+              lat={currentCityCoords.lat}
+              lon={currentCityCoords.lon}
+              isCelsius={isCelsius}
+              cityName={weather.name}
+              key={weatherMapKey}
+            />
           </div>
         </div>
       </div>

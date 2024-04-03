@@ -13,8 +13,16 @@ import { db } from "@/lib/firebase"
 import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import TemperatureSwitch from "./TemperatureSwitch"
 
-const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
+const Profile = ({
+  user,
+  fetchWeather,
+  favoriteCitiesProp,
+  setCity,
+  isCelsius,
+  onToggle,
+}) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
@@ -23,6 +31,10 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
   const [currentPassword, setCurrentPassword] = useState("")
   const [notification, setNotification] = useState("")
   const [firstName, setFirstName] = useState("")
+
+  const toggleTemperatureUnit = () => {
+    onToggle()
+  }
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -164,6 +176,14 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
           {notification}
         </div>
       )}
+
+      {/* Temperature Switch */}
+      <div className="flex justify-center ">
+        <TemperatureSwitch
+          isCelsius={isCelsius}
+          onToggle={toggleTemperatureUnit}
+        />
+      </div>
       {/* Favorite Cities List */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">

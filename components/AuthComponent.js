@@ -11,6 +11,8 @@ const AuthComponent = ({
   setFavoriteCities,
   handleCityClick,
   setCity,
+  isCelsius,
+  onToggle,
 }) => {
   const [authMode, setAuthMode] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
@@ -48,7 +50,7 @@ const AuthComponent = ({
   }
 
   return (
-    <div className="flex flex-col mt-4 " ref={containerRef}>
+    <div className="flex flex-col " ref={containerRef}>
       {currentUser ? (
         <Profile
           user={currentUser}
@@ -58,6 +60,8 @@ const AuthComponent = ({
           setFavoriteCities={setFavoriteCities}
           handleCityClick={handleCityClick}
           setCity={setCity}
+          isCelsius={isCelsius}
+          onToggle={onToggle}
         />
       ) : (
         <>
@@ -65,7 +69,7 @@ const AuthComponent = ({
           {authMode === "signup" && <Signup setAuthMode={setAuthMode} />}
           {!authMode && (
             <button
-              className="text-xl text-white font-semibold focus:outline-none"
+              className="text-xl text-black font-semibold focus:outline-none"
               onClick={toggleAuthMode}
             >
               Login / Signup

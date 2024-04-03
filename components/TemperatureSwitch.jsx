@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react"
 
 const TemperatureSwitch = ({ isCelsius, onToggle }) => {
   return (
-    <div className="flex items-center justify-center mb-4">
-      <span className="mr-2 font-medium text-lg text-white">°C</span>
+    <div className="flex items-center justify-center">
+      <span className="mr-2 font-medium text-lg text-black">°C</span>
       <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
         <input
           type="checkbox"
@@ -16,17 +16,17 @@ const TemperatureSwitch = ({ isCelsius, onToggle }) => {
         <label
           htmlFor="temp-switch"
           className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${
-            isCelsius ? 'bg-blue-500' : 'bg-gray-300'
+            isCelsius ? "bg-gray-400" : "bg-gray-400"
           }`}
         >
           <span
-            className={`block w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
-              isCelsius ? 'translate-x-0' : 'translate-x-4'
+            className={`block w-6 h-6 bg-blue-400 rounded-full shadow transform transition-transform duration-300 ease-in-out ${
+              isCelsius ? "translate-x-0" : "translate-x-4"
             }`}
           ></span>
         </label>
       </div>
-      <span className="font-medium text-lg text-white">°F</span>
+      <span className="font-medium text-lg text-black">°F</span>
     </div>
   )
 }
