@@ -272,7 +272,7 @@ export default function Home({ handleCityClick }) {
     }
   }, [currentUser, initialLoad])
   return (
-    <div className="flex flex-col min-h-screen w-full">
+    <div className="flex flex-col min-h-screen w-full bg-gray-200">
       <Head>
         <title>Climate Cue</title>
         <meta
@@ -282,10 +282,7 @@ export default function Home({ handleCityClick }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div
-        id="top"
-        className="absolute top-0 left-0 right-0 bottom-0 bg-gray-200 z-0"
-      />
+      <div id="top" className="absolute top-0 left-0 right-0 bottom-0 z-0" />
 
       <div className="relative z-10">
         <Navbar isUserSubscribed={isUserSubscribed} className="z-100" />
