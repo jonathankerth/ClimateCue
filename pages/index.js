@@ -355,7 +355,10 @@ export default function Home({ handleCityClick }) {
             <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
           )}
           {isUserSubscribed && Object.keys(weather).length !== 0 && (
-            <WeatherOutfitRecommendation weatherData={weather} />
+            <WeatherOutfitRecommendation
+              weatherData={weather}
+              className="mt-4"
+            />
           )}
           {!isUserSubscribed && forecast.length > 0 && (
             <FiveDayForecast
