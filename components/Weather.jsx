@@ -1,7 +1,8 @@
 import Image from "next/image"
 import React from "react"
+import TemperatureSwitch from "./TemperatureSwitch"
 
-const Weather = ({ data, isCelsius }) => {
+const Weather = ({ data, isCelsius, onToggle }) => {
   const location = data.name ? data.name : ""
   const state = data.state ? data.state : ""
   const country = data.country ? data.country : ""
@@ -32,6 +33,7 @@ const Weather = ({ data, isCelsius }) => {
             ? `${Math.round(toCelsius(data.main.temp))}°C`
             : `${Math.round(data.main.temp)}°F`}
         </p>
+        <TemperatureSwitch isCelsius={isCelsius} onToggle={onToggle} />
       </div>
 
       {/* Weather Details */}

@@ -13,7 +13,6 @@ import { db } from "@/lib/firebase"
 import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import TemperatureSwitch from "./TemperatureSwitch"
 
 const Profile = ({
   user,
@@ -177,13 +176,6 @@ const Profile = ({
         </div>
       )}
 
-      {/* Temperature Switch */}
-      <div className="flex justify-center ">
-        <TemperatureSwitch
-          isCelsius={isCelsius}
-          onToggle={toggleTemperatureUnit}
-        />
-      </div>
       {/* Favorite Cities List */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
