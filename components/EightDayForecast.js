@@ -57,10 +57,7 @@ const EightDayForecast = ({ city, isCelsius }) => {
   }
 
   return (
-    <div
-      id="eight-day-forecast"
-      className="relative flex flex-col max-w-[800px] w-full m-auto my-6 p-4 text-gray-300 bg-black/50 backdrop-blur-md rounded-lg shadow-lg"
-    >
+    <div className="relative flex flex-col max-w-[800px] w-full m-auto my-6 p-4 text-gray-300 bg-black/50 backdrop-blur-md rounded-lg shadow-lg">
       <h2 className="text-center text-3xl font-bold mb-4">
         8-Day Average Temperatures
       </h2>

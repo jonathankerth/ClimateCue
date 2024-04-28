@@ -1,6 +1,3 @@
-import { BsSearch } from "react-icons/bs"
-import Head from "next/head"
-import axios from "axios"
 import { useState, useEffect, useCallback } from "react"
 import { db } from "@/lib/firebase"
 import {
@@ -19,8 +16,10 @@ import FiveDayForecast from "@/components/FiveDayForecast"
 import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
 import EightDayForecast from "@/components/EightDayForecast"
-import ScrollToTop from "@/components/ScrollToTop"
 import Navbar from "@/components/NavBar"
+import { BsSearch } from "react-icons/bs"
+import Head from "next/head"
+import axios from "axios"
 
 const WeatherMap = dynamic(() => import("../components/WeatherMap"), {
   ssr: false,
@@ -41,7 +40,6 @@ export default function Home({ handleCityClick }) {
   const [isCelsius, setIsCelsius] = useState(true)
   const auth = getAuth()
 
-  const citiesCollectionRef = collection(db, "favoriteCities")
   const [favoriteCities, setFavoriteCities] = useState([])
   const [isUserSubscribed, setIsUserSubscribed] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
@@ -79,8 +77,11 @@ export default function Home({ handleCityClick }) {
     } catch (error) {
       console.error("Error fetching favorite cities for user:", error)
       setFavoriteCities([])
+    } finally {
+      setLoading(false)
     }
   }, [auth.currentUser])
+
   useEffect(() => {
     fetchFavoriteCities()
   }, [])
@@ -126,13 +127,58 @@ export default function Home({ handleCityClick }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    fetchWeather()
+    if (city.trim() !== "") {
+      fetchWeather(city)
+    }
   }
 
-  const updateCityFromProfile = (cityName) => {
-    setCity(cityName)
-    fetchWeather(cityName)
+  const fetchWeather = async (cityName) => {
+    if (!cityName) {
+      setError("City name cannot be empty")
+      return
+    }
+    setLoading(true)
+    try {
+      const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const geocodingResponse = await axios.get(geocodingUrl)
+
+      if (geocodingResponse.data.length === 0) {
+        throw new Error("City not found")
+      }
+
+      const { lat, lon, country, state } = geocodingResponse.data[0]
+
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const currentWeatherResponse = await axios.get(currentWeatherUrl)
+
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const forecastResponse = await axios.get(forecastUrl)
+
+      setWeather({
+        ...currentWeatherResponse.data,
+        country,
+        state,
+      })
+
+      if (forecastResponse.data && forecastResponse.data.list) {
+        const dailyData = forecastResponse.data.list.filter(
+          (forecast) => new Date(forecast.dt * 1000).getUTCHours() === 12
+        )
+        setForecast(dailyData)
+      } else {
+        setForecast([])
+      }
+
+      setCurrentCityCoords({ lat, lon })
+
+      setError(null)
+    } catch (error) {
+      setError(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
+
   const saveFavoriteCity = async (cityName) => {
     if (!auth.currentUser) {
       console.error("No user logged in")
@@ -166,52 +212,6 @@ export default function Home({ handleCityClick }) {
       }
     } catch (error) {
       console.error("Error adding favorite city:", error)
-    }
-  }
-
-  const fetchWeather = async (cityName = city) => {
-    if (!cityName) {
-      setError("City name cannot be empty")
-      return
-    }
-    setLoading(true)
-    try {
-      const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const geocodingResponse = await axios.get(geocodingUrl)
-
-      if (geocodingResponse.data.length === 0) {
-        throw new Error("City not found")
-      }
-
-      const { lat, lon, country, state } = geocodingResponse.data[0]
-
-      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const currentWeatherResponse = await axios.get(currentWeatherUrl)
-
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const forecastResponse = await axios.get(forecastUrl)
-
-      setWeather({
-        ...currentWeatherResponse.data,
-        country,
-        state,
-      })
-      if (forecastResponse.data && forecastResponse.data.list) {
-        const dailyData = forecastResponse.data.list.filter(
-          (forecast) => new Date(forecast.dt * 1000).getUTCHours() === 12
-        )
-        setForecast(dailyData)
-      } else {
-        setForecast([])
-      }
-
-      setCurrentCityCoords({ lat, lon })
-
-      setError(null)
-    } catch (error) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -271,6 +271,27 @@ export default function Home({ handleCityClick }) {
       fetchRandomWeather()
     }
   }, [currentUser, initialLoad])
+
+  const addToFavorites = async () => {
+    try {
+      const favoriteCityRef = doc(
+        db,
+        "favoriteCities",
+        `${auth.currentUser.uid}_${city}`
+      )
+      await updateDoc(favoriteCityRef, {
+        userId: auth.currentUser.uid,
+        city,
+      })
+      setShowNotification(true)
+      setTimeout(() => {
+        setShowNotification(false)
+      }, 3000)
+    } catch (error) {
+      console.error("Error adding city to favorites:", error)
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-gray-200">
       <Head>
@@ -287,7 +308,7 @@ export default function Home({ handleCityClick }) {
       <div className="relative z-10">
         <Navbar isUserSubscribed={isUserSubscribed} className="z-100" />
 
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end w-full lg:absolute lg:top-0 lg:right-0 mt-16 lg:mt-16 lg:mr-8 z-20">
+        <div className="flex flex-col mt-24">
           <AuthComponent
             favoriteCities={favoriteCities}
             setCityFromProfile={setCityFromProfile}
@@ -300,30 +321,29 @@ export default function Home({ handleCityClick }) {
           />
         </div>
 
-        <div className="flex flex-col items-center lg:flex-row lg:items-stretch lg:justify-center lg:mt-32">
+        <div className="max-w-[400px] mx-auto my-8">
           <form
             onSubmit={handleSubmit}
-            className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-2 flex flex-col lg:flex-row items-stretch lg:items-center space-y-2 lg:space-x-2 lg:space-y-0"
+            className="bg-white bg-opacity-60 shadow-lg rounded-2xl p-3 flex space-x-2"
           >
-            .
             <input
               onChange={(e) => setCity(e.target.value)}
               value={city}
-              className="flex-grow px-2 py-1 text-black focus:outline-none text-lg rounded-md lg:rounded-none"
+              className="w-full px-2 py-1 text-black focus:outline-none text-xl rounded-md"
               type="text"
               placeholder="Search city"
               aria-label="Search for a city"
             />
             <button
               type="submit"
-              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md lg:rounded-none"
+              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
             >
               <BsSearch size={20} />
             </button>
             <button
               type="button"
               onClick={fetchRandomWeather}
-              className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md lg:rounded-none"
+              className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
             >
               Random City
             </button>
@@ -336,20 +356,33 @@ export default function Home({ handleCityClick }) {
           </div>
         )}
 
+        {/* Notification */}
         {showNotification && (
-          <div className="bg-green-500 text-white p-2 rounded text-center">
+          <div className="fixed top-0 right-0 m-4 bg-green-500 text-white p-2 rounded">
             {weather.name} added to favorites!
           </div>
         )}
 
-        <div className="bg-gray-200 rounded-lg p-4 lg:mx-16">
-          <h2 className="text-2xl text-gray-800 font-bold text-center">
-            Weather in {weather.name}
-            {weather.state && `, ${weather.state}`}
-            {weather.sys?.country && `, ${weather.sys.country}`}
-          </h2>
-        </div>
+        {weather.name && (
+          <div className="text-center my-4">
+            <h2 className="text-2xl text-black font-bold">
+              Weather in {weather.name}
+              {weather.state && `, ${weather.state}`}
+              {weather.sys?.country && `, ${weather.sys.country}`}
+            </h2>
 
+            {auth.currentUser && !favoriteCities.includes(weather.name) && (
+              <button
+                onClick={() => saveFavoriteCity(weather.name)}
+                className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Add to Favorites
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Weather Data */}
         <div className="flex flex-col items-center">
           {Object.keys(weather).length !== 0 && (
             <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
@@ -368,8 +401,8 @@ export default function Home({ handleCityClick }) {
           )}
           {isUserSubscribed && forecast.length > 0 && (
             <EightDayForecast
-              city={city}
-              forecast={forecast}
+              city={weather.name}
+              currentCityCoords={currentCityCoords}
               isCelsius={isCelsius}
             />
           )}

@@ -31,10 +31,6 @@ const Profile = ({
   const [notification, setNotification] = useState("")
   const [firstName, setFirstName] = useState("")
 
-  const toggleTemperatureUnit = () => {
-    onToggle()
-  }
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
@@ -49,6 +45,10 @@ const Profile = ({
 
     fetchUserData()
   }, [user])
+
+  useEffect(() => {
+    setFavoriteCities(favoriteCitiesProp)
+  }, [favoriteCitiesProp])
 
   useEffect(() => {
     setFavoriteCities(favoriteCitiesProp)
@@ -76,74 +76,6 @@ const Profile = ({
     signOut(auth).catch((error) => console.error("Error signing out:", error))
   }
 
-  const handleEmailChange = () => {
-    if (auth.currentUser.emailVerified) {
-      updateEmail(auth.currentUser, newEmail)
-        .then(() => {
-          console.log("Email updated!")
-          setNotification("Your email has been successfully updated.")
-          setNewEmail("")
-        })
-        .catch((error) => {
-          console.error("Error updating email:", error)
-          setNotification("Error updating email.")
-        })
-    } else {
-      sendEmailVerification(auth.currentUser)
-        .then(() => {
-          console.log("Verification email sent!")
-          setNotification(
-            "You need to verify your current email before updating. A verification email has been sent."
-          )
-        })
-        .catch((error) => {
-          console.error("Error sending verification email:", error)
-          setNotification("Error sending verification email.")
-          setNewEmail("")
-        })
-    }
-  }
-
-  const handlePasswordChange = () => {
-    const credential = EmailAuthProvider.credential(
-      auth.currentUser.email,
-      currentPassword
-    )
-    reauthenticateWithCredential(auth.currentUser, credential)
-      .then(() => {
-        updatePassword(auth.currentUser, newPassword)
-          .then(() => {
-            console.log("Password updated!")
-            setNotification("Your password has been successfully updated.")
-            setNewPassword("")
-          })
-          .catch((error) => {
-            console.error("Error updating password:", error)
-            setNotification("Error updating password.")
-          })
-      })
-      .catch((error) => {
-        console.error("Re-authentication failed:", error)
-        setNotification("Re-authentication failed.")
-      })
-  }
-
-  const handleDeleteAccount = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      deleteUser(auth.currentUser)
-        .then(() => {
-          console.log("User deleted!")
-        })
-        .catch((error) => {
-          console.error("Error deleting user:", error)
-        })
-    }
-  }
-
   const toggleAccountSettings = () => {
     setShowAccountSettings(!showAccountSettings)
   }
@@ -166,17 +98,12 @@ const Profile = ({
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
-      {/* User Greeting */}
-      <p className="text-lg font-medium text-gray-800 mb-4">
-        Welcome, <span className="text-gray-600">{firstName}</span>
-      </p>
       {notification && (
         <div className="text-center my-2 p-2 bg-blue-100 text-blue-700 rounded">
           {notification}
         </div>
       )}
 
-      {/* Favorite Cities List */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
@@ -185,14 +112,15 @@ const Profile = ({
                 <Draggable key={city} draggableId={city} index={index}>
                   {(provided) => (
                     <li
-                      {...provided.draggableProps}
                       ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
                       className="my-2"
-                      onClick={() => handleCityClick(city)}
                     >
-                      <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
-                        <div {...provided.dragHandleProps}>☰</div>
-
+                      <div
+                        className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
+                        onClick={() => handleCityClick(city)}
+                      >
                         <p className="text-md font-medium text-gray-800">
                           {city}
                         </p>
@@ -215,6 +143,7 @@ const Profile = ({
           )}
         </Droppable>
       </DragDropContext>
+
       {/* Toggle Account Settings Button */}
       <button
         onClick={toggleAccountSettings}
