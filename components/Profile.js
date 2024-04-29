@@ -72,6 +72,73 @@ const Profile = ({
     fetchWeather(city)
   }
 
+  const handleEmailChange = () => {
+    if (auth.currentUser.emailVerified) {
+      updateEmail(auth.currentUser, newEmail)
+        .then(() => {
+          console.log("Email updated!")
+          setNotification("Your email has been successfully updated.")
+          setNewEmail("")
+        })
+        .catch((error) => {
+          console.error("Error updating email:", error)
+          setNotification("Error updating email.")
+        })
+    } else {
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+          console.log("Verification email sent!")
+          setNotification(
+            "You need to verify your current email before updating. A verification email has been sent."
+          )
+        })
+        .catch((error) => {
+          console.error("Error sending verification email:", error)
+          setNotification("Error sending verification email.")
+          setNewEmail("")
+        })
+    }
+  }
+
+  const handlePasswordChange = () => {
+    const credential = EmailAuthProvider.credential(
+      auth.currentUser.email,
+      currentPassword
+    )
+    reauthenticateWithCredential(auth.currentUser, credential)
+      .then(() => {
+        updatePassword(auth.currentUser, newPassword)
+          .then(() => {
+            console.log("Password updated!")
+            setNotification("Your password has been successfully updated.")
+            setNewPassword("")
+          })
+          .catch((error) => {
+            console.error("Error updating password:", error)
+            setNotification("Error updating password.")
+          })
+      })
+      .catch((error) => {
+        console.error("Re-authentication failed:", error)
+        setNotification("Re-authentication failed.")
+      })
+  }
+
+  const handleDeleteAccount = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      deleteUser(auth.currentUser)
+        .then(() => {
+          console.log("User deleted!")
+        })
+        .catch((error) => {
+          console.error("Error deleting user:", error)
+        })
+    }
+  }
   const handleLogout = () => {
     signOut(auth).catch((error) => console.error("Error signing out:", error))
   }
