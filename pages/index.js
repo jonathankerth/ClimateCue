@@ -306,12 +306,15 @@ export default function Home({ handleCityClick }) {
       <div id="top" className="absolute top-0 left-0 right-0 bottom-0 z-0" />
 
       <div className="relative z-10">
-        <Navbar isUserSubscribed={isUserSubscribed} className="z-100" />
-
+        <Navbar
+          isUserSubscribed={isUserSubscribed}
+          user={currentUser}
+          className="z-100"
+        />
         <div className="flex flex-col mt-24">
           <AuthComponent
             favoriteCities={favoriteCities}
-            setCityFromProfile={setCityFromProfile}
+            setCity={setCity}
             fetchWeather={fetchWeather}
             setFavoriteCities={setFavoriteCities}
             handleCityClick={handleCityClick}

@@ -14,14 +14,7 @@ import { updateDoc, doc, getDoc } from "firebase/firestore"
 import Subscribe from "./Subscribe"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
-const Profile = ({
-  user,
-  fetchWeather,
-  favoriteCitiesProp,
-  setCity,
-  isCelsius,
-  onToggle,
-}) => {
+const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
   const auth = getAuth()
   const [favoriteCities, setFavoriteCities] = useState([])
   const [newEmail, setNewEmail] = useState("")
@@ -50,10 +43,6 @@ const Profile = ({
     setFavoriteCities(favoriteCitiesProp)
   }, [favoriteCitiesProp])
 
-  useEffect(() => {
-    setFavoriteCities(favoriteCitiesProp)
-  }, [favoriteCitiesProp])
-
   const removeFavoriteCity = async (cityName) => {
     const updatedCities = favoriteCities.filter((city) => city !== cityName)
     try {
@@ -70,6 +59,10 @@ const Profile = ({
   const handleCityClick = (city) => {
     setCity(city)
     fetchWeather(city)
+  }
+
+  const handleLogout = () => {
+    signOut(auth).catch((error) => console.error("Error signing out:", error))
   }
 
   const handleEmailChange = () => {
@@ -139,9 +132,6 @@ const Profile = ({
         })
     }
   }
-  const handleLogout = () => {
-    signOut(auth).catch((error) => console.error("Error signing out:", error))
-  }
 
   const toggleAccountSettings = () => {
     setShowAccountSettings(!showAccountSettings)
@@ -165,12 +155,17 @@ const Profile = ({
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
+      {/* User Greeting */}
+      <p className="text-lg font-medium text-gray-800 mb-4">
+        Welcome, <span className="text-gray-600">{firstName}</span>
+      </p>
       {notification && (
         <div className="text-center my-2 p-2 bg-blue-100 text-blue-700 rounded">
           {notification}
         </div>
       )}
 
+      {/* Favorite Cities List */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
           {(provided) => (
@@ -179,15 +174,14 @@ const Profile = ({
                 <Draggable key={city} draggableId={city} index={index}>
                   {(provided) => (
                     <li
-                      ref={provided.innerRef}
                       {...provided.draggableProps}
-                      {...provided.dragHandleProps}
+                      ref={provided.innerRef}
                       className="my-2"
+                      onClick={() => handleCityClick(city)}
                     >
-                      <div
-                        className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black"
-                        onClick={() => handleCityClick(city)}
-                      >
+                      <div className="flex justify-between items-center bg-white p-2 rounded hover:bg-gray-100 transition duration-300 cursor-pointer border border-black">
+                        <div {...provided.dragHandleProps}>☰</div>
+
                         <p className="text-md font-medium text-gray-800">
                           {city}
                         </p>
@@ -210,7 +204,6 @@ const Profile = ({
           )}
         </Droppable>
       </DragDropContext>
-
       {/* Toggle Account Settings Button */}
       <button
         onClick={toggleAccountSettings}
