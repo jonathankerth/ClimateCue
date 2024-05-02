@@ -37,7 +37,7 @@ const Navbar = ({ isUserSubscribed, user }) => {
               <div className="text-2xl font-bold text-neutral-100">
                 ClimateCue
               </div>
-              <p className="text-lg font-medium text-white mb-4">
+              <p className="text-lg font-medium text-white ">
                 Welcome, <span className="text-white">{firstName}</span>
               </p>
               <Link
