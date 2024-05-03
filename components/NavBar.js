@@ -1,28 +1,10 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { Link } from "react-scroll"
 import { BsList } from "react-icons/bs"
-import { doc, getDoc } from "firebase/firestore" // Import getDoc function
-import { db } from "@/lib/firebase" // Assuming db is exported from your Firebase configuration file
 
-const Navbar = ({ isUserSubscribed, user }) => {
+const Navbar = ({ isUserSubscribed, firstName }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [showAccountSettings, setShowAccountSettings] = useState(false)
-  const [firstName, setFirstName] = useState("")
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userRef = doc(db, "users", user.uid)
-        const userDoc = await getDoc(userRef)
-        if (userDoc.exists()) {
-          setFirstName(userDoc.data().firstName)
-          // setFavoriteCities(userDoc.data().favoriteCities || []) // You need to define setFavoriteCities
-        }
-      }
-    }
-
-    fetchUserData()
-  }, [user])
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
@@ -37,8 +19,9 @@ const Navbar = ({ isUserSubscribed, user }) => {
               <div className="text-2xl font-bold text-neutral-100">
                 ClimateCue
               </div>
-              <p className="text-lg font-medium text-white ">
-                Welcome, <span className="text-white">{firstName}</span>
+              <p className="text-lg font-medium text-white">
+                Welcome,{" "}
+                <span className="text-white">{firstName || "Guest"}</span>
               </p>
               <Link
                 to="weather-data"

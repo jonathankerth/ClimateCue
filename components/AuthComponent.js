@@ -49,8 +49,12 @@ const AuthComponent = ({
     setAuthMode(authMode === "login" ? "signup" : "login")
   }
 
+  const handleUserLogout = () => {
+    setCurrentUser(null) // This will effectively clear the user state
+  }
+
   return (
-    <div className="flex flex-col " ref={containerRef}>
+    <div className="flex flex-col" ref={containerRef}>
       {currentUser ? (
         <Profile
           user={currentUser}
@@ -62,6 +66,7 @@ const AuthComponent = ({
           setCity={setCity}
           isCelsius={isCelsius}
           onToggle={onToggle}
+          handleLogout={handleUserLogout} // Pass the logout handler as a prop
         />
       ) : (
         <>

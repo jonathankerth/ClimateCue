@@ -62,7 +62,11 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
   }
 
   const handleLogout = () => {
-    signOut(auth).catch((error) => console.error("Error signing out:", error))
+    signOut(auth)
+      .then(() => {
+        props.handleLogout()
+      })
+      .catch((error) => console.error("Error signing out:", error))
   }
 
   const handleEmailChange = () => {
@@ -155,10 +159,6 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md border border-gray-300 max-w-md mx-auto my-6">
-      {/* User Greeting */}
-      <p className="text-lg font-medium text-gray-800 mb-4">
-        Welcome, <span className="text-gray-600">{firstName}</span>
-      </p>
       {notification && (
         <div className="text-center my-2 p-2 bg-blue-100 text-blue-700 rounded">
           {notification}

@@ -33,16 +33,15 @@ export default function Home({ handleCityClick }) {
   const [error, setError] = useState(null)
   const [randomCityKey, setRandomCityKey] = useState(0)
   const [weatherMapKey, setWeatherMapKey] = useState(0)
-  const [currentCityCoords, setCurrentCityCoords] = useState({
-    lat: 0,
-    lon: 0,
-  })
+  const [currentCityCoords, setCurrentCityCoords] = useState({ lat: 0, lon: 0 })
   const [isCelsius, setIsCelsius] = useState(true)
   const auth = getAuth()
-
   const [favoriteCities, setFavoriteCities] = useState([])
   const [isUserSubscribed, setIsUserSubscribed] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [firstName, setFirstName] = useState("")
+  const [initialLoad, setInitialLoad] = useState(true)
 
   const setCityFromProfile = (cityName) => {
     setCity(cityName)
@@ -70,7 +69,6 @@ export default function Home({ handleCityClick }) {
         collection(db, "favoriteCities"),
         where("userId", "==", auth.currentUser.uid)
       )
-
       const querySnapshot = await getDocs(q)
       const cities = querySnapshot.docs.map((doc) => doc.data().city)
       setFavoriteCities(cities)
@@ -86,10 +84,6 @@ export default function Home({ handleCityClick }) {
     fetchFavoriteCities()
   }, [])
 
-  const [currentUser, setCurrentUser] = useState(null)
-
-  const [initialLoad, setInitialLoad] = useState(true)
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -99,6 +93,7 @@ export default function Home({ handleCityClick }) {
         const userDoc = await getDoc(userRef)
         if (userDoc.exists()) {
           setIsUserSubscribed(userDoc.data().isSubscribed)
+          setFirstName(userDoc.data().firstName) // Set the first name
 
           const cities = userDoc.data().favoriteCities || []
           setFavoriteCities(cities)
@@ -117,6 +112,7 @@ export default function Home({ handleCityClick }) {
         setCurrentUser(null)
         setIsUserSubscribed(false)
         setFavoriteCities([])
+        setFirstName("") // Clear the first name when logged out
         fetchRandomWeather()
       }
       setInitialLoad(false)
@@ -308,6 +304,7 @@ export default function Home({ handleCityClick }) {
       <div className="relative z-10">
         <Navbar
           isUserSubscribed={isUserSubscribed}
+          firstName={firstName}
           user={currentUser}
           className="z-100"
         />
