@@ -2,29 +2,20 @@ import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Image from "next/image"
 
-const EightDayForecast = ({ city, isCelsius }) => {
+const EightDayForecast = ({ currentCityCoords, isCelsius }) => {
   const [forecast, setForecast] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchEightDayForecast = async () => {
-      if (!city) {
-        setError("City name cannot be empty")
+      if (!currentCityCoords.lat || !currentCityCoords.lon) {
+        setError("Coordinates not available")
         return
       }
       setLoading(true)
       try {
-        const geocodingUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-        const geocodingResponse = await axios.get(geocodingUrl)
-
-        if (geocodingResponse.data.length === 0) {
-          throw new Error("City not found")
-        }
-
-        const { lat, lon } = geocodingResponse.data[0]
-
-        const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude=minutely,hourly,current,alerts&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+        const forecastUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${currentCityCoords.lat}&lon=${currentCityCoords.lon}&units=metric&exclude=minutely,hourly,current,alerts&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
         const forecastResponse = await axios.get(forecastUrl)
 
         if (forecastResponse.data && forecastResponse.data.daily) {
@@ -42,7 +33,7 @@ const EightDayForecast = ({ city, isCelsius }) => {
     }
 
     fetchEightDayForecast()
-  }, [city])
+  }, [currentCityCoords])
 
   if (loading) {
     return <div>Loading...</div>
@@ -83,8 +74,8 @@ const EightDayForecast = ({ city, isCelsius }) => {
             />
             <p className="font-bold text-2xl">
               {isCelsius
-                ? `${Math.round(toCelsius(day.temp.day))}°C`
-                : `${Math.round(day.temp.day)}°F`}
+                ? `${Math.round(day.temp.day)}°C`
+                : `${Math.round((day.temp.day * 9) / 5 + 32)}°F`}
             </p>
             <p className="text-sm capitalize">{day.weather[0].description}</p>
           </div>

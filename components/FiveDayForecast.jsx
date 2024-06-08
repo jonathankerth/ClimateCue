@@ -39,16 +39,12 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
               width={64}
               height={64}
             />
-            {day.main && (
-              <p className="font-bold text-2xl">
-                {isCelsius
-                  ? `${Math.round(toCelsius(day.main.temp))}°C`
-                  : `${Math.round(day.main.temp)}°F`}
-              </p>
-            )}
-            {day.weather[0] && (
-              <p className="text-sm capitalize">{day.weather[0].description}</p>
-            )}
+            <p className="font-bold text-2xl">
+              {isCelsius
+                ? `${Math.round(toCelsius(day.temp.day))}°C`
+                : `${Math.round(day.temp.day)}°F`}
+            </p>
+            <p className="text-sm capitalize">{day.weather[0].description}</p>
           </div>
         ))}
       </div>

@@ -16,6 +16,7 @@ import FiveDayForecast from "@/components/FiveDayForecast"
 import AuthComponent from "../components/AuthComponent"
 import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendation.js"
 import EightDayForecast from "@/components/EightDayForecast"
+import WeatherDetails from "@/components/WeatherDetails"
 import Navbar from "@/components/NavBar"
 import { BsSearch } from "react-icons/bs"
 import Head from "next/head"
@@ -144,29 +145,23 @@ export default function Home({ handleCityClick }) {
 
       const { lat, lon, country, state } = geocodingResponse.data[0]
 
-      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const currentWeatherResponse = await axios.get(currentWeatherUrl)
-
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const forecastResponse = await axios.get(forecastUrl)
+      const oneCallUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,hourly,alerts&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const oneCallResponse = await axios.get(oneCallUrl)
 
       setWeather({
-        ...currentWeatherResponse.data,
-        country,
+        ...oneCallResponse.data,
+        name: cityName,
         state,
+        country,
       })
 
-      if (forecastResponse.data && forecastResponse.data.list) {
-        const dailyData = forecastResponse.data.list.filter(
-          (forecast) => new Date(forecast.dt * 1000).getUTCHours() === 12
-        )
-        setForecast(dailyData)
+      if (oneCallResponse.data.daily) {
+        setForecast(oneCallResponse.data.daily.slice(0, 5))
       } else {
         setForecast([])
       }
 
       setCurrentCityCoords({ lat, lon })
-
       setError(null)
     } catch (error) {
       setError(error.message)
@@ -230,31 +225,26 @@ export default function Home({ handleCityClick }) {
       const geocodingResponse = await axios.get(geocodingUrl)
       const { lat, lon, country, state } = geocodingResponse.data[0]
 
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const weatherResponse = await axios.get(weatherUrl)
+      const oneCallUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&exclude=minutely,hourly,alerts&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
+      const oneCallResponse = await axios.get(oneCallUrl)
+
       setWeather({
-        ...weatherResponse.data,
-        country,
+        ...oneCallResponse.data,
+        name: randomCity.name,
         state,
+        country,
       })
 
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}`
-      const forecastResponse = await axios.get(forecastUrl)
-      if (forecastResponse.data && forecastResponse.data.list) {
-        const dailyData = forecastResponse.data.list.filter(
-          (forecast) => new Date(forecast.dt * 1000).getUTCHours() === 12
-        )
-        setForecast(dailyData)
+      if (oneCallResponse.data.daily) {
+        setForecast(oneCallResponse.data.daily.slice(0, 5))
       } else {
         setForecast([])
       }
 
-      setError(null)
-
       setCurrentCityCoords({ lat, lon })
       setWeatherMapKey((prevKey) => prevKey + 1)
-
       setRandomCityKey((prevKey) => prevKey + 1)
+      setError(null)
     } catch (error) {
       setError(error.message)
     } finally {
@@ -363,12 +353,12 @@ export default function Home({ handleCityClick }) {
           </div>
         )}
 
-        {weather.name && (
+        {weather.current && (
           <div className="text-center my-4">
             <h2 className="text-2xl text-black font-bold">
               Weather in {weather.name}
               {weather.state && `, ${weather.state}`}
-              {weather.sys?.country && `, ${weather.sys.country}`}
+              {weather.country && `, ${weather.country}`}
             </h2>
 
             {auth.currentUser && !favoriteCities.includes(weather.name) && (
@@ -384,10 +374,19 @@ export default function Home({ handleCityClick }) {
 
         {/* Weather Data */}
         <div className="flex flex-col items-center">
-          {Object.keys(weather).length !== 0 && (
-            <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
+          {weather.current && (
+            <>
+              <Weather
+                data={weather}
+                isCelsius={isCelsius}
+                onToggle={onToggle}
+              />
+              <div className="my-2">
+                <WeatherDetails weatherData={weather} isCelsius={isCelsius} />
+              </div>
+            </>
           )}
-          {isUserSubscribed && Object.keys(weather).length !== 0 && (
+          {isUserSubscribed && weather.current && (
             <div className="mt-4">
               <WeatherOutfitRecommendation weatherData={weather} />
             </div>
