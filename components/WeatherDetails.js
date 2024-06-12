@@ -23,7 +23,10 @@ const WeatherDetails = ({ weatherData, isCelsius }) => {
   const toFahrenheit = (celsius) => (celsius * 9) / 5 + 32
 
   return (
-    <div className="bg-white bg-opacity-70 p-6 rounded-lg shadow-lg">
+    <div
+      className="bg-white bg-opacity-70 p-6 rounded-lg shadow-lg"
+      id="weather-details"
+    >
       <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
         Detailed Weather Information
       </h2>

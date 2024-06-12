@@ -27,15 +27,27 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                 to="weather-data"
                 smooth={true}
                 duration={500}
+                offset={-64}
                 className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
               >
                 Current Weather
+              </Link>
+              <Link
+                onClick={toggleMenu}
+                to="weather-details"
+                smooth={true}
+                duration={500}
+                offset={-64}
+                className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
+              >
+                Advanced Details
               </Link>
               {!isUserSubscribed && (
                 <Link
                   to="five-day-forecast"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Five-Day Forecast
@@ -46,6 +58,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   to="outfit-rec"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Outfit Recommendation
@@ -56,6 +69,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   to="eight-day-forecast"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Eight-Day Forecast
@@ -65,6 +79,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                 to="map"
                 smooth={true}
                 duration={500}
+                offset={-64}
                 className="text-neutral-100 hover:bg-primary hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
               >
                 Weather Map
@@ -88,9 +103,20 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                 to="weather-data"
                 smooth={true}
                 duration={500}
+                offset={-64}
                 className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
               >
                 Current Weather
+              </Link>
+              <Link
+                onClick={toggleMenu}
+                to="weather-details"
+                smooth={true}
+                duration={500}
+                offset={-64}
+                className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
+              >
+                Advanced Details
               </Link>
               {!isUserSubscribed && (
                 <Link
@@ -98,6 +124,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   to="five-day-forecast"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Five-Day Forecast
@@ -109,6 +136,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   to="outfit-recommendation"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Outfit Recommendation
@@ -120,6 +148,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   to="eight-day-forecast"
                   smooth={true}
                   duration={500}
+                  offset={-64}
                   className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
                 >
                   Eight-Day Forecast
@@ -130,6 +159,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                 to="map"
                 smooth={true}
                 duration={500}
+                offset={-64}
                 className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
               >
                 Weather Map
