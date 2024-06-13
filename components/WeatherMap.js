@@ -8,6 +8,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   const [map, setMap] = useState(null)
   const [layer, setLayer] = useState("temp_new")
   const [marker, setMarker] = useState(null)
+
   const createCustomIcon = () => {
     const svgString = `
       <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
@@ -25,9 +26,10 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
     iconSize: L.point(30, 30),
     popupAnchor: [0, -15],
   })
+
   const legends = {
     precipitation_new: {
-      title: "Classic Rain (mm)",
+      title: "Rain (mm)",
       colors: [
         { color: "rgba(225, 200, 100, 0)", value: "0 mm" },
         { color: "rgba(200, 150, 150, 0)", value: "0.1 mm" },
@@ -151,6 +153,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   const latitude = Number(lat)
   const longitude = Number(lon)
   const isValidLocation = !isNaN(latitude) && !isNaN(longitude)
+
   useEffect(() => {
     if (isValidLocation && !map) {
       const mapContainer = L.map("map", {
@@ -200,6 +203,14 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
       }
     }
   }, [map, layer])
+
+  useEffect(() => {
+    return () => {
+      if (map) {
+        map.remove()
+      }
+    }
+  }, [map])
 
   if (!isValidLocation) {
     return (

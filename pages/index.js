@@ -18,6 +18,7 @@ import WeatherOutfitRecommendation from "@/components/WeatherOutfitRecommendatio
 import EightDayForecast from "@/components/EightDayForecast"
 import WeatherDetails from "@/components/WeatherDetails"
 import Navbar from "@/components/NavBar"
+import WeatherNews from "@/components/WeatherNews"
 import { BsSearch } from "react-icons/bs"
 import Head from "next/head"
 import axios from "axios"
@@ -94,7 +95,7 @@ export default function Home({ handleCityClick }) {
         const userDoc = await getDoc(userRef)
         if (userDoc.exists()) {
           setIsUserSubscribed(userDoc.data().isSubscribed)
-          setFirstName(userDoc.data().firstName) // Set the first name
+          setFirstName(userDoc.data().firstName)
 
           const cities = userDoc.data().favoriteCities || []
           setFavoriteCities(cities)
@@ -113,7 +114,7 @@ export default function Home({ handleCityClick }) {
         setCurrentUser(null)
         setIsUserSubscribed(false)
         setFavoriteCities([])
-        setFirstName("") // Clear the first name when logged out
+        setFirstName("")
         fetchRandomWeather()
       }
       setInitialLoad(false)
@@ -197,7 +198,9 @@ export default function Home({ handleCityClick }) {
         console.log(`${cityName} added to favorites`)
         setFavoriteCities(updatedFavoriteCities)
         setShowNotification(true)
-        setTimeout(() => setShowNotification(false), 3000)
+        setTimeout(() => {
+          setShowNotification(false)
+        }, 3000)
       } else {
         console.error("User document does not exist")
       }
@@ -375,6 +378,9 @@ export default function Home({ handleCityClick }) {
                   <WeatherOutfitRecommendation weatherData={weather} />
                 </div>
               )}
+            </div>
+            <div className="bg-white shadow-lg rounded-lg p-6">
+              <WeatherNews />
             </div>
           </div>
         )}
