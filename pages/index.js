@@ -282,7 +282,7 @@ export default function Home({ handleCityClick }) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-100">
+    <div className="flex flex-col min-h-screen w-full bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 text-white">
       <Head>
         <title>Climate Cue</title>
         <meta
@@ -296,7 +296,7 @@ export default function Home({ handleCityClick }) {
         isUserSubscribed={isUserSubscribed}
         firstName={firstName}
         user={currentUser}
-        className="shadow-md"
+        className="shadow-md bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700"
       />
 
       <div className="container mx-auto px-4 py-8">
@@ -313,26 +313,26 @@ export default function Home({ handleCityClick }) {
           />
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <input
               onChange={(e) => setCity(e.target.value)}
               value={city}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none text-black"
               type="text"
               placeholder="Search city"
               aria-label="Search for a city"
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md"
             >
               <BsSearch size={20} />
             </button>
             <button
               type="button"
               onClick={fetchRandomWeather}
-              className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md"
             >
               Random City
             </button>
@@ -352,14 +352,14 @@ export default function Home({ handleCityClick }) {
         )}
 
         {weather.current && (
-          <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
+          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4">
               Weather in {weather.name}, {weather.state}, {weather.country}
             </h2>
             {auth.currentUser && !favoriteCities.includes(weather.name) && (
               <button
                 onClick={() => saveFavoriteCity(weather.name)}
-                className="mb-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md"
+                className="mb-4 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md"
               >
                 Add to Favorites
               </button>
@@ -379,7 +379,7 @@ export default function Home({ handleCityClick }) {
                 </div>
               )}
             </div>
-            <div className="bg-white shadow-lg rounded-lg p-6">
+            <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mt-4">
               <WeatherNews />
             </div>
           </div>
@@ -387,7 +387,7 @@ export default function Home({ handleCityClick }) {
 
         <div className="grid grid-cols-1 gap-8">
           {forecast.length > 0 && (
-            <div className="bg-white shadow-lg rounded-lg p-6">
+            <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6">
               {!isUserSubscribed ? (
                 <FiveDayForecast
                   city={city}
@@ -403,7 +403,7 @@ export default function Home({ handleCityClick }) {
               )}
             </div>
           )}
-          <div className="bg-white shadow-lg rounded-lg p-6">
+          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6">
             <WeatherMap
               lat={currentCityCoords.lat}
               lon={currentCityCoords.lon}
