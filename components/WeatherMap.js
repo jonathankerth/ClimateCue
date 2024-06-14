@@ -111,13 +111,13 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
     const currentLegend = legends[layer]
     if (!currentLegend) {
       return (
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-md text-black">
           No legend available for this layer.
         </div>
       )
     }
     return (
-      <div className="bg-white p-4 rounded-lg shadow-md">
+      <div className="bg-white p-4 rounded-lg shadow-md text-black border border-gray-300">
         <h3 className="font-semibold text-lg mb-4 text-center">
           {currentLegend.title}
         </h3>
@@ -137,9 +137,9 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
                 key={index}
                 className="flex flex-col items-center m-2 w-1/3 md:w-1/4 lg:w-1/6"
               >
-                <span className="text-sm mb-1">{displayValue}</span>
+                <span className="text-sm mb-1 text-black">{displayValue}</span>
                 <div
-                  className="w-10 h-3"
+                  className="w-10 h-3 border border-gray-300"
                   style={{ backgroundColor: item.color }}
                 ></div>
               </div>
@@ -199,7 +199,9 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
       weatherLayer.addTo(map)
 
       return () => {
-        map.removeLayer(weatherLayer)
+        if (map && weatherLayer) {
+          map.removeLayer(weatherLayer)
+        }
       }
     }
   }, [map, layer])
@@ -224,7 +226,8 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
     <div className="flex flex-col items-center my-4">
       <div id="weather-map" className="mb-4 relative">
         <select
-          className="bg-white border border-gray-300 rounded-md text-gray-700 h-10 pl-5 pr-8 hover:border-gray-400 focus:outline-none appearance-none w-full"
+          className="bg-white border border-gray-300 rounded-md text-black
+           h-10 pl-5 pr-8 hover:border-gray-400 focus:outline-none appearance-none w-full"
           value={layer}
           onChange={(e) => setLayer(e.target.value)}
         >
@@ -249,7 +252,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
         className="w-full md:max-w-4xl h-64 md:h-96 rounded-lg shadow-md"
         style={{ background: "#e2e8f0" }}
       />
-      <div className="mt-4 w-full md:max-w-4xl bg-white p-4 rounded-lg shadow-md">
+      <div className="mt-4 w-full md:max-w-4xl bg-white p-4 rounded-lg shadow-md text-black border border-gray-300">
         {renderLegend()}
       </div>
     </div>

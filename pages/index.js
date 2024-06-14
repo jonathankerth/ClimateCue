@@ -350,27 +350,27 @@ export default function Home({ handleCityClick }) {
             {error}
           </div>
         )}
-
-        {weather.current && (
-          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4">
+        <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
+          <div className="flex justify-center items-center mb-4">
+            <h2 className="text-2xl font-bold text-center mr-4">
               Weather in {weather.name}, {weather.state}, {weather.country}
             </h2>
             {auth.currentUser && !favoriteCities.includes(weather.name) && (
               <button
                 onClick={() => saveFavoriteCity(weather.name)}
-                className="mb-4 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md text-center"
               >
                 Add to Favorites
               </button>
             )}
+          </div>
+          <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
+        </div>
+
+        {weather.current && (
+          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <Weather
-                  data={weather}
-                  isCelsius={isCelsius}
-                  onToggle={onToggle}
-                />
                 <WeatherDetails weatherData={weather} isCelsius={isCelsius} />
               </div>
               {isUserSubscribed && (
