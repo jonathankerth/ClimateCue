@@ -41,7 +41,7 @@ const Signup = ({ setAuthMode }) => {
   }
 
   return (
-    <div className="bg-gray-100 rounded-lg border border-gray-300 p-6 w-full max-w-xs mx-auto">
+    <div className="bg-gray-100 rounded-lg border border-gray-300 text-black p-6 w-full max-w-xs mx-auto">
       <h1 className="text-xl font-semibold mb-4">Sign Up for an Account</h1>
       <input
         type="text"
