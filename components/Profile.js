@@ -70,6 +70,13 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
   }
 
   const handleEmailChange = () => {
+    const currentEmail = prompt("Please enter your current email:")
+
+    if (currentEmail !== auth.currentUser.email) {
+      setNotification("The current email you entered is incorrect.")
+      return
+    }
+
     if (auth.currentUser.emailVerified) {
       updateEmail(auth.currentUser, newEmail)
         .then(() => {
@@ -228,7 +235,7 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
               placeholder="New Email"
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
-              className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="mt-2 w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               onClick={handleEmailChange}
@@ -244,14 +251,14 @@ const Profile = ({ user, fetchWeather, favoriteCitiesProp, setCity }) => {
               placeholder="Current Password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               type="password"
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               onClick={handlePasswordChange}
