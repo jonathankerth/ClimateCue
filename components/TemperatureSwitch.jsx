@@ -3,7 +3,7 @@ import React from "react"
 const TemperatureSwitch = ({ isCelsius, onToggle }) => {
   return (
     <div className="flex items-center justify-center">
-      <span className="mr-2 font-medium text-lg text-black">°C</span>
+      <span className="mr-2 font-medium text-lg text-white">°C</span>
       <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
         <input
           type="checkbox"
@@ -26,7 +26,7 @@ const TemperatureSwitch = ({ isCelsius, onToggle }) => {
           ></span>
         </label>
       </div>
-      <span className="font-medium text-lg text-black">°F</span>
+      <span className="font-medium text-lg text-white">°F</span>
     </div>
   )
 }
