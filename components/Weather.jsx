@@ -29,7 +29,7 @@ const Weather = ({ data, isCelsius, onToggle }) => {
   return (
     <div
       id="weather-data"
-      className="relative flex flex-col max-w-[500px] w-full m-auto p-6 text-gray-800 bg-white bg-opacity-70 backdrop-blur-md rounded-lg shadow-lg"
+      className="relative flex flex-col max-w-[500px] w-full m-auto p-6 text-gray-200 bg-black bg-opacity-50 backdrop-blur-md rounded-lg shadow-lg"
     >
       {/* Location */}
       <div className="text-center mb-4">

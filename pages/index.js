@@ -313,7 +313,7 @@ export default function Home({ handleCityClick }) {
           />
         </div>
 
-        <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
+        <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6 mb-8">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <input
               onChange={(e) => setCity(e.target.value)}
@@ -350,7 +350,7 @@ export default function Home({ handleCityClick }) {
             {error}
           </div>
         )}
-        <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
+        <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6 mb-8">
           <div className="flex justify-center items-center mb-4">
             <h2 className="text-2xl font-bold text-center mr-4">
               Weather in {weather.name}, {weather.state}, {weather.country}
@@ -364,11 +364,12 @@ export default function Home({ handleCityClick }) {
               </button>
             )}
           </div>
+
           <Weather data={weather} isCelsius={isCelsius} onToggle={onToggle} />
         </div>
 
         {weather.current && (
-          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mb-8">
+          <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <WeatherDetails weatherData={weather} isCelsius={isCelsius} />
@@ -379,7 +380,7 @@ export default function Home({ handleCityClick }) {
                 </div>
               )}
             </div>
-            <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6 mt-4">
+            <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6 mt-4">
               <WeatherNews />
             </div>
           </div>
@@ -387,7 +388,7 @@ export default function Home({ handleCityClick }) {
 
         <div className="grid grid-cols-1 gap-8">
           {forecast.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6">
+            <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6">
               {!isUserSubscribed ? (
                 <FiveDayForecast
                   city={city}
@@ -403,7 +404,7 @@ export default function Home({ handleCityClick }) {
               )}
             </div>
           )}
-          <div className="bg-gradient-to-r from-blue-700 via-blue-500 to-blue-700 shadow-lg rounded-lg p-6">
+          <div className="bg-black bg-opacity-50 shadow-lg rounded-lg p-6">
             <WeatherMap
               lat={currentCityCoords.lat}
               lon={currentCityCoords.lon}
