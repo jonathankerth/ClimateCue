@@ -50,7 +50,7 @@ const AuthComponent = ({
   }
 
   const handleUserLogout = () => {
-    setCurrentUser(null) // This will effectively clear the user state
+    setCurrentUser(null)
   }
 
   return (
@@ -66,7 +66,7 @@ const AuthComponent = ({
           setCity={setCity}
           isCelsius={isCelsius}
           onToggle={onToggle}
-          handleLogout={handleUserLogout} // Pass the logout handler as a prop
+          handleLogout={handleUserLogout}
         />
       ) : (
         <>
