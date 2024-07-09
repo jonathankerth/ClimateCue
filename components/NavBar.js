@@ -11,7 +11,7 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
   }
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-black/70 z-40">
+    <nav className="fixed top-0 left-0 w-full bg-black/70 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">

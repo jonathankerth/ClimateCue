@@ -223,7 +223,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   }
 
   return (
-    <div className="flex flex-col items-center my-4">
+    <div className="flex flex-col items-center my-4 z-20">
       <div id="weather-map" className="mb-4 relative">
         <select
           className="bg-white border border-gray-300 rounded-md text-black
@@ -249,7 +249,7 @@ const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
       </div>
       <div
         id="map"
-        className="w-full md:max-w-4xl h-64 md:h-96 rounded-lg shadow-md"
+        className="w-full md:max-w-4xl h-64 md:h-96 rounded-lg shadow-md z-10"
         style={{ background: "#e2e8f0" }}
       />
       <div className="mt-4 w-full md:max-w-4xl bg-white p-4 rounded-lg shadow-md text-black border border-gray-300">
