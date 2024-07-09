@@ -280,7 +280,6 @@ export default function Home({ handleCityClick }) {
       console.error("Error adding city to favorites:", error)
     }
   }
-
   return (
     <div className="flex flex-col min-h-screen w-full bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 text-white">
       <Head>

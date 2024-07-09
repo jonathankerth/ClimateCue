@@ -11,10 +11,8 @@ const WeatherNews = () => {
       setLoading(true)
       try {
         const response = await axios.get(`/api/weather-news`)
-        console.log("News API response:", response.data)
         setNews(response.data.articles)
       } catch (error) {
-        console.error("Error fetching weather news:", error)
         setError("Error fetching weather news")
       } finally {
         setLoading(false)
@@ -33,12 +31,12 @@ const WeatherNews = () => {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 mb-6">
-      <h2 className="text-xl font-bold mb-3">Interesting News</h2>
+    <div className="bg-white shadow-lg rounded-lg p-3 mb-4">
+      <h2 className="text-lg font-bold mb-2">Interesting News</h2>
       {news.length === 0 ? (
         <p>No interesting news available.</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {news.map((article, index) => (
             <div key={index} className="flex flex-col">
               <a
@@ -47,14 +45,14 @@ const WeatherNews = () => {
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline"
               >
-                <h3 className="text-lg font-semibold">{article.title}</h3>
+                <h3 className="text-md font-semibold">{article.title}</h3>
               </a>
-              <p className="text-sm">{article.description}</p>
+              <p className="text-xs">{article.description}</p>
               {article.urlToImage && (
                 <img
                   src={article.urlToImage}
                   alt={article.title}
-                  className="w-full h-auto rounded-lg mt-2"
+                  className="w-full h-32 object-cover rounded-lg mt-1"
                 />
               )}
               <p className="text-xs text-gray-500">{article.source.name}</p>
