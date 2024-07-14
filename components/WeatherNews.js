@@ -31,8 +31,10 @@ const WeatherNews = () => {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-3 mb-4">
-      <h2 className="text-lg font-bold mb-2">Interesting News</h2>
+    <div className="bg-white shadow-lg rounded-lg p-3 mb-4" id="news">
+      <h2 className="text-lg font-bold mb-2 text-black">
+        Interesting News Around the World
+      </h2>
       {news.length === 0 ? (
         <p>No interesting news available.</p>
       ) : (

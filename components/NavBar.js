@@ -55,22 +55,11 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
               >
                 Advanced Details
               </Link>
-              {!isUserSubscribed && (
-                <Link
-                  onClick={toggleMenu}
-                  to="five-day-forecast"
-                  smooth={true}
-                  duration={500}
-                  offset={-64}
-                  className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
-                >
-                  Five-Day Forecast
-                </Link>
-              )}
+
               {isUserSubscribed && (
                 <Link
                   onClick={toggleMenu}
-                  to="outfit-recommendation"
+                  to="outfit-rec"
                   smooth={true}
                   duration={500}
                   offset={-64}
@@ -79,6 +68,16 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   Outfit Recommendation
                 </Link>
               )}
+              <Link
+                onClick={toggleMenu}
+                to="news"
+                smooth={true}
+                duration={500}
+                offset={-64}
+                className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
+              >
+                Weather News
+              </Link>
               {isUserSubscribed && (
                 <Link
                   onClick={toggleMenu}
@@ -91,6 +90,19 @@ const Navbar = ({ isUserSubscribed, firstName }) => {
                   Eight-Day Forecast
                 </Link>
               )}
+              {!isUserSubscribed && (
+                <Link
+                  onClick={toggleMenu}
+                  to="five-day-forecast"
+                  smooth={true}
+                  duration={500}
+                  offset={-64}
+                  className="text-neutral-100 hover:bg-primary hover:text-white px-4 py-2 rounded-md text-sm font-medium cursor-pointer"
+                >
+                  Five-Day Forecast
+                </Link>
+              )}
+
               <Link
                 onClick={toggleMenu}
                 to="map"
