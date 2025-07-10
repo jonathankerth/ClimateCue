@@ -216,7 +216,7 @@ export default function Home({ handleCityClick }) {
       const min_population = 2697000
       const max_population = 100000000
 
-      const cityUrl = `https://api.api-ninjas.com/v1/city?min_population=${min_population}&max_population=${max_population}&limit=30`
+      const cityUrl = `https://api.api-ninjas.com/v1/city?min_population=${min_population}&max_population=${max_population}`
       const cityResponse = await axios.get(cityUrl, {
         headers: { "X-Api-Key": process.env.NEXT_PUBLIC_API_NINJA_KEY },
       })
