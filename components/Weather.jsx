@@ -65,19 +65,19 @@ const Weather = ({ data, isCelsius, onToggle }) => {
 
           {/* Right side - Weather Stats */}
           <div className="grid grid-cols-3 gap-6 w-full lg:w-auto">
-            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[100px] min-w-[100px]">
               <div className="text-3xl font-bold text-white mb-2">
                 {Math.round(displayFeelsLike)}°
               </div>
               <p className="text-white/70 text-sm font-medium">Feels Like</p>
             </div>
-            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[100px] min-w-[100px]">
               <div className="text-3xl font-bold text-white mb-2">
                 {humidity}%
               </div>
               <p className="text-white/70 text-sm font-medium">Humidity</p>
             </div>
-            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[100px] min-w-[100px]">
               <div className="text-3xl font-bold text-white mb-2">
                 {Math.round(wind_speed)}
               </div>

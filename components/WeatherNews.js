@@ -49,24 +49,24 @@ const WeatherNews = () => {
       ) : (
         <div className="space-y-4">
           {news.map((article, index) => (
-            <div key={index} className="backdrop-blur-md bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-all duration-200">
+            <div key={index} className="backdrop-blur-md bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-all duration-200 transform hover:scale-[1.02] cursor-pointer">
               <a
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-300 hover:text-blue-200 hover:underline block"
+                className="block p-4 text-white hover:text-blue-200 transition-colors duration-200"
               >
-                <h3 className="text-lg font-semibold text-white mb-2">{article.title}</h3>
+                <h3 className="text-lg font-semibold text-white mb-2 hover:text-blue-300 transition-colors duration-200">{article.title}</h3>
+                <p className="text-sm text-white/70 mb-3">{article.description}</p>
+                {article.urlToImage && (
+                  <img
+                    src={article.urlToImage}
+                    alt={article.title}
+                    className="w-full h-32 object-cover rounded-lg mb-3"
+                  />
+                )}
+                <p className="text-xs text-white/50">{article.source.name}</p>
               </a>
-              <p className="text-sm text-white/70 mb-3">{article.description}</p>
-              {article.urlToImage && (
-                <img
-                  src={article.urlToImage}
-                  alt={article.title}
-                  className="w-full h-32 object-cover rounded-lg mb-3"
-                />
-              )}
-              <p className="text-xs text-white/50">{article.source.name}</p>
             </div>
           ))}
         </div>
