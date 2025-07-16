@@ -17,34 +17,46 @@ const FiveDayForecast = ({ forecast, isCelsius }) => {
   return (
     <div
       id="five-day-forecast"
-      className="relative flex flex-col max-w-[500px] w-full m-auto my-6 p-4 text-gray-300 bg-black/50 backdrop-blur-md rounded-lg shadow-lg"
+      className="w-full animate-slide-in-up"
     >
-      <h2 className="text-center text-3xl font-bold mb-4">
-        5-Day Average Temperatures
-      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {forecast.map((day) => (
+        {forecast.map((day, index) => (
           <div
             key={day.dt}
-            className="flex flex-col items-center p-4 bg-white/30 rounded-lg shadow-lg transform transition duration-500 hover:scale-105"
+            className="group backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 rounded-xl p-6 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+            style={{ animationDelay: `${index * 0.1}s` }}
           >
-            <p className="font-medium text-lg">
-              {new Date(day.dt * 1000).toLocaleDateString(undefined, {
-                weekday: "short",
-              })}
-            </p>
-            <Image
-              src={`http://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-              alt="weather icon"
-              width={64}
-              height={64}
-            />
-            <p className="font-bold text-2xl">
-              {isCelsius
-                ? `${Math.round(toCelsius(day.temp.day))}°C`
-                : `${Math.round(day.temp.day)}°F`}
-            </p>
-            <p className="text-sm capitalize">{day.weather[0].description}</p>
+            <div className="flex flex-col items-center text-center space-y-3">
+              <p className="font-semibold text-lg text-white/90">
+                {new Date(day.dt * 1000).toLocaleDateString(undefined, {
+                  weekday: "short",
+                })}
+              </p>
+              <div className="relative">
+                <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Image
+                  src={`http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}
+                  alt="weather icon"
+                  width={64}
+                  height={64}
+                  className="relative z-10 drop-shadow-lg"
+                />
+              </div>
+              <div className="space-y-2">
+                <p className="font-bold text-2xl text-white">
+                  {isCelsius
+                    ? `${Math.round(toCelsius(day.temp.day))}°`
+                    : `${Math.round(day.temp.day)}°`}
+                </p>
+                <p className="text-sm text-white/70 capitalize font-medium">
+                  {day.weather[0].description}
+                </p>
+              </div>
+              <div className="flex justify-between w-full text-xs text-white/60">
+                <span>H: {isCelsius ? `${Math.round(toCelsius(day.temp.max))}°` : `${Math.round(day.temp.max)}°`}</span>
+                <span>L: {isCelsius ? `${Math.round(toCelsius(day.temp.min))}°` : `${Math.round(day.temp.min)}°`}</span>
+              </div>
+            </div>
           </div>
         ))}
       </div>

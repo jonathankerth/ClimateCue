@@ -6,7 +6,7 @@ import { faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons"
 
 const WeatherMap = ({ lat, lon, isCelsius, cityName }) => {
   const [map, setMap] = useState(null)
-  const [layer, setLayer] = useState("temp_new")
+  const [layer, setLayer] = useState("precipitation_new")
   const [marker, setMarker] = useState(null)
 
   const createCustomIcon = () => {

@@ -29,51 +29,61 @@ const Weather = ({ data, isCelsius, onToggle }) => {
   return (
     <div
       id="weather-data"
-      className="relative flex flex-col max-w-[500px] w-full m-auto p-6 text-gray-200 bg-black bg-opacity-50 backdrop-blur-md rounded-lg shadow-lg"
+      className="relative w-full max-w-2xl mx-auto"
     >
-      {/* Location */}
-      <div className="text-center mb-4">
-        <h2 className="text-3xl font-bold">{location}</h2>
-        <p className="text-lg">
-          {state ? `${state}, ` : ""}
-          {country}
-        </p>
-      </div>
+      {/* Main Weather Card */}
+      <div className="backdrop-blur-md bg-gradient-to-br from-white/20 to-white/10 border border-white/30 rounded-3xl p-8 shadow-2xl">
+        {/* Current Weather Display */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+          {/* Left side - Temperature and Icon */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div className="flex items-center gap-6 mb-4">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 to-purple-600 rounded-full blur opacity-30"></div>
+                <Image
+                  src={`http://openweathermap.org/img/wn/${weather[0].icon}@2x.png`}
+                  alt="weather icon"
+                  width={120}
+                  height={120}
+                  className="relative z-10 drop-shadow-lg"
+                />
+              </div>
+              <div>
+                <p className="text-8xl font-bold text-white drop-shadow-lg">
+                  {Math.round(displayTemp)}°
+                </p>
+                <p className="text-xl text-white/80 font-medium">
+                  {isCelsius ? "Celsius" : "Fahrenheit"}
+                </p>
+              </div>
+            </div>
+            <p className="text-2xl capitalize text-white/90 font-semibold mb-4">
+              {weather[0].description}
+            </p>
+            <TemperatureSwitch isCelsius={isCelsius} onToggle={onToggle} />
+          </div>
 
-      {/* Current Weather */}
-      <div className="flex flex-col items-center text-center mb-6">
-        <Image
-          src={`http://openweathermap.org/img/wn/${weather[0].icon}.png`}
-          alt="weather icon"
-          width={100}
-          height={100}
-        />
-        <p className="text-2xl capitalize">{weather[0].description}</p>
-        <p className="text-7xl font-bold">
-          {isCelsius
-            ? `${Math.round(displayTemp)}°C`
-            : `${Math.round(displayTemp)}°F`}
-        </p>
-        <TemperatureSwitch isCelsius={isCelsius} onToggle={onToggle} />
-      </div>
-
-      {/* Weather Details */}
-      <div className="flex justify-between p-4 border-t border-gray-400/50">
-        <div className="text-center">
-          <p className="font-bold text-xl">
-            {isCelsius
-              ? `${Math.round(displayFeelsLike)}°C`
-              : `${Math.round(displayFeelsLike)}°F`}
-          </p>
-          <p>Feels Like</p>
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-xl">{humidity}%</p>
-          <p>Humidity</p>
-        </div>
-        <div className="text-center">
-          <p className="font-bold text-xl">{Math.round(wind_speed)} m/s</p>
-          <p>Winds</p>
+          {/* Right side - Weather Stats */}
+          <div className="grid grid-cols-3 gap-6 w-full lg:w-auto">
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">
+                {Math.round(displayFeelsLike)}°
+              </div>
+              <p className="text-white/70 text-sm font-medium">Feels Like</p>
+            </div>
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">
+                {humidity}%
+              </div>
+              <p className="text-white/70 text-sm font-medium">Humidity</p>
+            </div>
+            <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">
+                {Math.round(wind_speed)}
+              </div>
+              <p className="text-white/70 text-sm font-medium">Wind m/s</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

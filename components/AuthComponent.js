@@ -74,7 +74,7 @@ const AuthComponent = ({
           {authMode === "signup" && <Signup setAuthMode={setAuthMode} />}
           {!authMode && (
             <button
-              className="text-xl text-black font-semibold focus:outline-none"
+              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
               onClick={toggleAuthMode}
             >
               Login / Signup

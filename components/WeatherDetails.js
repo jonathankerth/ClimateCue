@@ -24,78 +24,101 @@ const WeatherDetails = ({ weatherData, isCelsius }) => {
 
   return (
     <div
-      className="bg-black bg-opacity-50 p-6 rounded-lg shadow-lg"
+      className="space-y-6 animate-slide-in-up"
       id="weather-details"
     >
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-200">
-        Advanced Weather Details
-      </h2>
-      <ul className="space-y-2">
-        <li className="flex justify-between text-gray-200">
-          <span>Temperature:</span>
-          <span>
-            {isCelsius
-              ? `${Math.round(temp)}°C`
-              : `${Math.round(toFahrenheit(temp))}°F`}
-          </span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Feels Like:</span>
-          <span>
-            {isCelsius
-              ? `${Math.round(feels_like)}°C`
-              : `${Math.round(toFahrenheit(feels_like))}°F`}
-          </span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Pressure:</span>
-          <span>{pressure} hPa</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Humidity:</span>
-          <span>{humidity}%</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Dew Point:</span>
-          <span>
-            {isCelsius
-              ? `${Math.round(dew_point)}°C`
-              : `${Math.round(toFahrenheit(dew_point))}°F`}
-          </span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>UV Index:</span>
-          <span>{uvi}</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Cloudiness:</span>
-          <span>{clouds}%</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Visibility:</span>
-          <span>{visibility} meters</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Wind Speed:</span>
-          <span>{wind_speed} m/s</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Wind Direction:</span>
-          <span>{wind_deg}°</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Sunrise:</span>
-          <span>{new Date(sunrise * 1000).toLocaleTimeString()}</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Sunset:</span>
-          <span>{new Date(sunset * 1000).toLocaleTimeString()}</span>
-        </li>
-        <li className="flex justify-between text-gray-200">
-          <span>Weather:</span>
-          <span className="capitalize">{weather[0].description}</span>
-        </li>
-      </ul>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Temperature</span>
+            <span className="text-white font-semibold text-lg">
+              {isCelsius
+                ? `${Math.round(temp)}°C`
+                : `${Math.round(toFahrenheit(temp))}°F`}
+            </span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Feels Like</span>
+            <span className="text-white font-semibold text-lg">
+              {isCelsius
+                ? `${Math.round(feels_like)}°C`
+                : `${Math.round(toFahrenheit(feels_like))}°F`}
+            </span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Pressure</span>
+            <span className="text-white font-semibold text-lg">{pressure} hPa</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Humidity</span>
+            <span className="text-white font-semibold text-lg">{humidity}%</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Dew Point</span>
+            <span className="text-white font-semibold text-lg">
+              {isCelsius
+                ? `${Math.round(dew_point)}°C`
+                : `${Math.round(toFahrenheit(dew_point))}°F`}
+            </span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">UV Index</span>
+            <span className="text-white font-semibold text-lg">{uvi}</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Cloudiness</span>
+            <span className="text-white font-semibold text-lg">{clouds}%</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Visibility</span>
+            <span className="text-white font-semibold text-lg">{(visibility / 1000).toFixed(1)} km</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Wind Speed</span>
+            <span className="text-white font-semibold text-lg">{wind_speed} m/s</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Wind Direction</span>
+            <span className="text-white font-semibold text-lg">{wind_deg}°</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Sunrise</span>
+            <span className="text-white font-semibold text-lg">{new Date(sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+        </div>
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all duration-200">
+          <div className="flex items-center justify-between">
+            <span className="text-white/70 text-sm font-medium">Sunset</span>
+            <span className="text-white font-semibold text-lg">{new Date(sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+        </div>
+      </div>
+      <div className="backdrop-blur-md bg-gradient-to-r from-blue-500/20 to-purple-600/20 border border-white/20 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <span className="text-white/70 text-sm font-medium">Current Conditions</span>
+          <span className="text-white font-semibold text-lg capitalize">{weather[0].description}</span>
+        </div>
+      </div>
     </div>
   )
 }

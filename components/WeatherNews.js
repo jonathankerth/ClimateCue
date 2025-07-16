@@ -23,41 +23,50 @@ const WeatherNews = () => {
   }, [])
 
   if (loading) {
-    return <div>Loading news...</div>
+    return (
+      <div className="flex items-center justify-center space-x-4 py-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+        <span className="text-white/70 font-medium">Loading news...</span>
+      </div>
+    )
   }
 
   if (error) {
-    return <div>{error}</div>
+    return (
+      <div className="text-center py-8">
+        <div className="text-red-400 font-medium">{error}</div>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-3 mb-4" id="news">
-      <h2 className="text-lg font-bold mb-2 text-black">
+    <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-xl p-6 shadow-lg" id="news">
+      <h2 className="text-xl font-bold mb-6 text-white text-center">
         Interesting News Around the World
       </h2>
       {news.length === 0 ? (
-        <p>No interesting news available.</p>
+        <p className="text-center text-white/70">No interesting news available.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-4">
           {news.map((article, index) => (
-            <div key={index} className="flex flex-col">
+            <div key={index} className="backdrop-blur-md bg-white/10 border border-white/20 rounded-lg p-4 hover:bg-white/20 transition-all duration-200">
               <a
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-blue-300 hover:text-blue-200 hover:underline block"
               >
-                <h3 className="text-md font-semibold">{article.title}</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">{article.title}</h3>
               </a>
-              <p className="text-xs">{article.description}</p>
+              <p className="text-sm text-white/70 mb-3">{article.description}</p>
               {article.urlToImage && (
                 <img
                   src={article.urlToImage}
                   alt={article.title}
-                  className="w-full h-32 object-cover rounded-lg mt-1"
+                  className="w-full h-32 object-cover rounded-lg mb-3"
                 />
               )}
-              <p className="text-xs text-gray-500">{article.source.name}</p>
+              <p className="text-xs text-white/50">{article.source.name}</p>
             </div>
           ))}
         </div>
